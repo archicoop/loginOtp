@@ -1,0 +1,21 @@
+﻿# Dipendenze PHP (PHPUnit installato localmente)
+vendor/
+
+# File di sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Claude Code (memoria locale, non va in repo)
+.claude/
+CLAUDE.md
+
+# SVN (migrazione storica)
+.svn/
+
+# Cache PHPUnit
+.phpunit.result.cache

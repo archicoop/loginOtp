@@ -1,0 +1,14 @@
+{
+    "name": "archimede/omp-twofactorauth",
+    "description": "Two-Factor Authentication plugin for OMP 3.5",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload-dev": {
+        "classmap": ["tests/"]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

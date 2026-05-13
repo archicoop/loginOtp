@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: twoFactorAuth 1.0.0\n"
+"POT-Creation-Date: 2025-05-07\n"
+"PO-Revision-Date: 2025-05-07\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.twoFactorAuth.displayName"
+msgstr "Two-Factor Authentication via Email (2FA)"
+
+msgid "plugins.generic.twoFactorAuth.description"
+msgstr "Adds two-factor authentication to the login process by sending a one-time code via email. Mandatory for all users. ACN and GDPR compliant."
+
+msgid "plugins.generic.twoFactorAuth.verify.title"
+msgstr "Verify your identity"
+
+msgid "plugins.generic.twoFactorAuth.verify.description"
+msgstr "We sent a 6-digit verification code to your registered email address. Enter it below. The code expires in 10 minutes."
+
+msgid "plugins.generic.twoFactorAuth.verify.code.label"
+msgstr "Verification code"
+
+msgid "plugins.generic.twoFactorAuth.verify.code.placeholder"
+msgstr "000000"
+
+msgid "plugins.generic.twoFactorAuth.verify.submit"
+msgstr "Verify and log in"
+
+msgid "plugins.generic.twoFactorAuth.verify.error.invalidCode"
+msgstr "Invalid code. Check your email and try again."
+
+msgid "plugins.generic.twoFactorAuth.verify.error.locked"
+msgstr "Too many failed attempts. Access is blocked for 15 minutes. Please try again later."
+
+msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.title"
+msgstr "Roles that require two-step verification"
+
+msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.description"
+msgstr "Select the roles for which email verification is mandatory. If no role is selected, 2FA is disabled for all users."
+
+msgid "plugins.generic.twoFactorAuth.settings.role.siteAdmin"
+msgstr "Site Administrator"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.manager"
+msgstr "Manager"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.subEditor"
+msgstr "Section / Series Editor"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.reviewer"
+msgstr "Reviewer"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.assistant"
+msgstr "Editorial Assistant"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.author"
+msgstr "Author"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.reader"
+msgstr "Reader"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.subscriptionManager"
+msgstr "Subscription Manager"
+
+msgid "plugins.generic.twoFactorAuth.email.subject"
+msgstr "Your login verification code"
+
+msgid "plugins.generic.twoFactorAuth.email.body"
+msgstr "Dear {$name},\n\nyour verification code to log in is:\n\n    {$code}\n\nThe code is valid for {$minutes} minutes.\n\nIf you did not request access, please ignore this email."
+
+msgid "plugins.generic.twoFactorAuth.email.footer"
+msgstr "This message was generated automatically. Please do not reply to this email."
