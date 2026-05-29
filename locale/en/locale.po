@@ -47,23 +47,41 @@ msgstr "Site Administrator"
 msgid "plugins.generic.twoFactorAuth.settings.role.manager"
 msgstr "Manager"
 
+msgid "plugins.generic.twoFactorAuth.settings.role.manager.note"
+msgstr "OMP: Press manager, Press editor, Production editor · OJS: Journal manager, Editor-in-chief, Production editor"
+
 msgid "plugins.generic.twoFactorAuth.settings.role.subEditor"
 msgstr "Section / Series Editor"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.subEditor.note"
+msgstr "OMP: Series editor · OJS: Section editor, Guest editor"
 
 msgid "plugins.generic.twoFactorAuth.settings.role.reviewer"
 msgstr "Reviewer"
 
+msgid "plugins.generic.twoFactorAuth.settings.role.reviewer.note"
+msgstr "OMP: Internal reviewer, External reviewer · OJS: External reviewer"
+
 msgid "plugins.generic.twoFactorAuth.settings.role.assistant"
 msgstr "Editorial Assistant"
 
+msgid "plugins.generic.twoFactorAuth.settings.role.assistant.note"
+msgstr "Copyeditor, Designer, Funder, Indexer, Layout editor, Marketing, Proofreader, Editorial board member"
+
 msgid "plugins.generic.twoFactorAuth.settings.role.author"
 msgstr "Author"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.author.note"
+msgstr "OMP: Author, Book editor, Chapter author, Translator · OJS: Author, Translator"
 
 msgid "plugins.generic.twoFactorAuth.settings.role.reader"
 msgstr "Reader"
 
 msgid "plugins.generic.twoFactorAuth.settings.role.subscriptionManager"
 msgstr "Subscription Manager"
+
+msgid "plugins.generic.twoFactorAuth.settings.role.subscriptionManager.note"
+msgstr "OJS only"
 
 msgid "plugins.generic.twoFactorAuth.email.subject"
 msgstr "Your login verification code"

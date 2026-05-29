@@ -12,12 +12,17 @@ $(function() {ldelim}
         <p class="pkp_helpers_text">{translate key="plugins.generic.twoFactorAuth.settings.requiredRoles.description"}</p>
         <ul style="list-style:none; padding:0; margin:0.5em 0;">
             {foreach from=$allRoles key=roleId item=roleKey}
-            <li style="margin:0.3em 0;">
-                <label>
+            <li style="margin:0.5em 0;">
+                <label style="font-weight:bold;">
                     <input type="checkbox" name="requiredRoles[]" value="{$roleId}"
                         {if in_array($roleId, $requiredRoles)}checked="checked"{/if}>
                     {translate key=$roleKey}
                 </label>
+                {if array_key_exists($roleId, $roleNotes)}
+                <div style="margin-left:1.6em; margin-top:0.1em; font-size:0.85em; color:#666;">
+                    {translate key=$roleNotes[$roleId]}
+                </div>
+                {/if}
             </li>
             {/foreach}
         </ul>
