@@ -40,11 +40,18 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 ## Installation
 
-### Manual installation
+### Manual installation via plugin/generic folder
 
 1. Download the latest release `.tar.gz` from the [Releases](../../releases) page
 2. Extract it into `plugins/generic/loginOtp/` inside your OMP or OJS installation
 3. In OMP/OJS, go to **Settings → Website → Plugins → Generic Plugins**
+4. Find **Login OTP via Email** and click **Enable**
+
+### Manual installation via upload in plugin page
+
+1. Download the latest release `.tar.gz` from the [Releases](../../releases) page
+2. In OMP/OJS, go to **Settings → Website → Plugins → Upload a New Plugin**
+3. Browse to the plugin `.tar.gz` file and install the plugin
 4. Find **Login OTP via Email** and click **Enable**
 
 ---
@@ -160,6 +167,12 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 1. Scarica il file `.tar.gz` dell'ultima release dalla pagina [Releases](../../releases)
 2. Estrai il contenuto in `plugins/generic/loginOtp/` nella tua installazione OMP o OJS
 3. In OMP/OJS, vai a **Impostazioni → Sito web → Plugin → Plugin generici**
+4. Trova **Login OTP via Email** e clicca **Abilita**
+
+### Installazione manuale con **Upload** dalla pagina Plugins
+1. Scarica il file `.tar.gz` dell'ultima release dalla pagina [Releases](../../releases)
+2. Estrai il contenuto in `plugins/generic/loginOtp/` nella tua installazione OMP o OJS
+3. Seleziona il file `.tar.gz` scaricato e procedere con l'installazione
 4. Trova **Login OTP via Email** e clicca **Abilita**
 
 ---
