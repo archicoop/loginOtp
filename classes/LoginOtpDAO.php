@@ -1,6 +1,6 @@
 <?php
 
-namespace APP\plugins\generic\twoFactorAuth\classes;
+namespace APP\plugins\generic\loginOtp\classes;
 
 use Illuminate\Support\Facades\DB;
 
@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
  * Persists per-user rate-limiting data (failed attempts and lockout) in user_settings.
  * Compatible with OMP and OJS — the OTP code itself lives only in the session.
  */
-class TwoFactorAuthDAO
+class LoginOtpDAO
 {
-    private const PREFIX          = 'twoFactorAuth_';
+    private const PREFIX          = 'loginOtp_';
     private const MAX_ATTEMPTS    = 5;
     private const LOCKOUT_SECONDS = 900;  // 15 minutes
     private const OTP_THROTTLE    = 60;   // seconds between OTP sends

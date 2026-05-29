@@ -1,6 +1,6 @@
 <?php
 
-namespace APP\plugins\generic\twoFactorAuth\mail;
+namespace APP\plugins\generic\loginOtp\mail;
 
 use Illuminate\Mail\Mailable;
 
@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailable;
  * Extends Illuminate's Mailable directly (not PKP's Mailable, which requires DB templates).
  * Compatible with OMP and OJS — PHPMailerTransport reads getHtmlBody(), so HTML body is required.
  */
-class TwoFactorAuthCodeMail extends Mailable
+class LoginOtpCodeMail extends Mailable
 {
     public function __construct(
         private string $code,
@@ -20,7 +20,7 @@ class TwoFactorAuthCodeMail extends Mailable
     public function build(): static
     {
         return $this
-            ->subject(__('plugins.generic.twoFactorAuth.email.subject'))
+            ->subject(__('plugins.generic.loginOtp.email.subject'))
             ->html($this->buildHtmlBody());
     }
 
@@ -30,7 +30,7 @@ class TwoFactorAuthCodeMail extends Mailable
         $name    = htmlspecialchars($this->userName, ENT_QUOTES, 'UTF-8');
         $minutes = (int) $this->minutes;
         $body    = nl2br(htmlspecialchars(
-            __('plugins.generic.twoFactorAuth.email.body', [
+            __('plugins.generic.loginOtp.email.body', [
                 'code'    => $this->code,
                 'minutes' => $this->minutes,
                 'name'    => $this->userName,
@@ -40,7 +40,7 @@ class TwoFactorAuthCodeMail extends Mailable
         ));
 
         $footer = htmlspecialchars(
-            __('plugins.generic.twoFactorAuth.email.footer'),
+            __('plugins.generic.loginOtp.email.footer'),
             ENT_QUOTES,
             'UTF-8'
         );

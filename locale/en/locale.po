@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: twoFactorAuth 1.0.0\n"
+"Project-Id-Version: loginOtp 1.0.0\n"
 "POT-Creation-Date: 2025-05-07\n"
 "PO-Revision-Date: 2025-05-07\n"
 "Language: en\n"
@@ -8,68 +8,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "plugins.generic.twoFactorAuth.displayName"
-msgstr "Two-Factor Authentication via Email (2FA)"
+msgid "plugins.generic.loginOtp.displayName"
+msgstr "Login OTP via Email"
 
-msgid "plugins.generic.twoFactorAuth.description"
+msgid "plugins.generic.loginOtp.description"
 msgstr "Adds two-factor authentication to the login process by sending a one-time code via email. Mandatory for all users. ACN and GDPR compliant."
 
-msgid "plugins.generic.twoFactorAuth.verify.title"
+msgid "plugins.generic.loginOtp.verify.title"
 msgstr "Verify your identity"
 
-msgid "plugins.generic.twoFactorAuth.verify.description"
+msgid "plugins.generic.loginOtp.verify.description"
 msgstr "We sent a 6-digit verification code to your registered email address. Enter it below. The code expires in 10 minutes."
 
-msgid "plugins.generic.twoFactorAuth.verify.code.label"
+msgid "plugins.generic.loginOtp.verify.code.label"
 msgstr "Verification code"
 
-msgid "plugins.generic.twoFactorAuth.verify.code.placeholder"
+msgid "plugins.generic.loginOtp.verify.code.placeholder"
 msgstr "000000"
 
-msgid "plugins.generic.twoFactorAuth.verify.submit"
+msgid "plugins.generic.loginOtp.verify.submit"
 msgstr "Verify and log in"
 
-msgid "plugins.generic.twoFactorAuth.verify.error.invalidCode"
+msgid "plugins.generic.loginOtp.verify.error.invalidCode"
 msgstr "Invalid code. Check your email and try again."
 
-msgid "plugins.generic.twoFactorAuth.verify.error.locked"
+msgid "plugins.generic.loginOtp.verify.error.locked"
 msgstr "Too many failed attempts. Access is blocked for 15 minutes. Please try again later."
 
-msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.title"
+msgid "plugins.generic.loginOtp.settings.requiredRoles.title"
 msgstr "Roles that require two-step verification"
 
-msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.description"
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
 msgstr "Select the roles for which email verification is mandatory. If no role is selected, 2FA is disabled for all users."
 
-msgid "plugins.generic.twoFactorAuth.settings.role.siteAdmin"
+msgid "plugins.generic.loginOtp.settings.role.siteAdmin"
 msgstr "Site Administrator"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.manager"
+msgid "plugins.generic.loginOtp.settings.role.manager"
 msgstr "Manager"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.subEditor"
+msgid "plugins.generic.loginOtp.settings.role.subEditor"
 msgstr "Section / Series Editor"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.reviewer"
+msgid "plugins.generic.loginOtp.settings.role.reviewer"
 msgstr "Reviewer"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.assistant"
+msgid "plugins.generic.loginOtp.settings.role.assistant"
 msgstr "Editorial Assistant"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.author"
+msgid "plugins.generic.loginOtp.settings.role.author"
 msgstr "Author"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.reader"
+msgid "plugins.generic.loginOtp.settings.role.reader"
 msgstr "Reader"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.subscriptionManager"
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
 msgstr "Subscription Manager"
 
-msgid "plugins.generic.twoFactorAuth.email.subject"
+msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Your login verification code"
 
-msgid "plugins.generic.twoFactorAuth.email.body"
+msgid "plugins.generic.loginOtp.email.body"
 msgstr "Dear {$name},\n\nyour verification code to log in is:\n\n    {$code}\n\nThe code is valid for {$minutes} minutes.\n\nIf you did not request access, please ignore this email."
 
-msgid "plugins.generic.twoFactorAuth.email.footer"
+msgid "plugins.generic.loginOtp.email.footer"
 msgstr "This message was generated automatically. Please do not reply to this email."

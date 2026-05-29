@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: twoFactorAuth 1.0.0\n"
+"Project-Id-Version: loginOtp 1.0.0\n"
 "POT-Creation-Date: 2025-05-07\n"
 "PO-Revision-Date: 2026-05-07\n"
 "Language: it\n"
@@ -8,68 +8,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "plugins.generic.twoFactorAuth.displayName"
-msgstr "Autenticazione a Due Fattori via Email (2FA)"
+msgid "plugins.generic.loginOtp.displayName"
+msgstr "Login OTP via Email"
 
-msgid "plugins.generic.twoFactorAuth.description"
+msgid "plugins.generic.loginOtp.description"
 msgstr "Aggiunge l'autenticazione a due fattori al processo di login tramite codice OTP inviato via email. Obbligatoria per tutti gli utenti. Conforme ACN e GDPR."
 
-msgid "plugins.generic.twoFactorAuth.verify.title"
+msgid "plugins.generic.loginOtp.verify.title"
 msgstr "Verifica identità"
 
-msgid "plugins.generic.twoFactorAuth.verify.description"
+msgid "plugins.generic.loginOtp.verify.description"
 msgstr "Ti abbiamo inviato un codice di verifica a 6 cifre all'indirizzo email registrato. Inseriscilo qui sotto. Il codice scade dopo 10 minuti."
 
-msgid "plugins.generic.twoFactorAuth.verify.code.label"
+msgid "plugins.generic.loginOtp.verify.code.label"
 msgstr "Codice di verifica"
 
-msgid "plugins.generic.twoFactorAuth.verify.code.placeholder"
+msgid "plugins.generic.loginOtp.verify.code.placeholder"
 msgstr "000000"
 
-msgid "plugins.generic.twoFactorAuth.verify.submit"
+msgid "plugins.generic.loginOtp.verify.submit"
 msgstr "Verifica e accedi"
 
-msgid "plugins.generic.twoFactorAuth.verify.error.invalidCode"
+msgid "plugins.generic.loginOtp.verify.error.invalidCode"
 msgstr "Codice non valido. Controlla l'email e riprova."
 
-msgid "plugins.generic.twoFactorAuth.verify.error.locked"
+msgid "plugins.generic.loginOtp.verify.error.locked"
 msgstr "Troppi tentativi falliti. L'accesso è bloccato per 15 minuti. Riprova più tardi."
 
-msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.title"
+msgid "plugins.generic.loginOtp.settings.requiredRoles.title"
 msgstr "Ruoli che richiedono la verifica in due passaggi"
 
-msgid "plugins.generic.twoFactorAuth.settings.requiredRoles.description"
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
 msgstr "Seleziona i ruoli per cui è obbligatoria la verifica via email. Se nessun ruolo è selezionato, il 2FA è disabilitato per tutti gli utenti."
 
-msgid "plugins.generic.twoFactorAuth.settings.role.siteAdmin"
+msgid "plugins.generic.loginOtp.settings.role.siteAdmin"
 msgstr "Amministratore del sito"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.manager"
+msgid "plugins.generic.loginOtp.settings.role.manager"
 msgstr "Gestore"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.subEditor"
+msgid "plugins.generic.loginOtp.settings.role.subEditor"
 msgstr "Editor di sezione / serie"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.reviewer"
+msgid "plugins.generic.loginOtp.settings.role.reviewer"
 msgstr "Revisore"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.assistant"
+msgid "plugins.generic.loginOtp.settings.role.assistant"
 msgstr "Assistente editoriale"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.author"
+msgid "plugins.generic.loginOtp.settings.role.author"
 msgstr "Autore"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.reader"
+msgid "plugins.generic.loginOtp.settings.role.reader"
 msgstr "Lettore"
 
-msgid "plugins.generic.twoFactorAuth.settings.role.subscriptionManager"
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
 msgstr "Gestore abbonamenti"
 
-msgid "plugins.generic.twoFactorAuth.email.subject"
+msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Codice di accesso per la tua area riservata"
 
-msgid "plugins.generic.twoFactorAuth.email.body"
+msgid "plugins.generic.loginOtp.email.body"
 msgstr "Gentile {$name},\n\nil tuo codice di verifica per l'accesso è:\n\n    {$code}\n\nIl codice è valido per {$minutes} minuti.\n\nSe non hai richiesto l'accesso, ignora questa email."
 
-msgid "plugins.generic.twoFactorAuth.email.footer"
+msgid "plugins.generic.loginOtp.email.footer"
 msgstr "Questo messaggio è stato generato automaticamente. Non rispondere a questa email."

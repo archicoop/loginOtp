@@ -1,10 +1,12 @@
 <?php
 
+namespace APP\plugins\generic\loginOtp\tests;
+
 use PHPUnit\Framework\TestCase;
 
 /**
  * Testa la logica di throttle OTP e lockout per tentativi falliti.
- * Replica le costanti e gli algoritmi di TwoFactorAuthDAO senza importarla,
+ * Replica le costanti e gli algoritmi di LoginOtpDAO senza importarla,
  * così i test rimangono puri (nessun DB, nessun bootstrap OMP).
  */
 class ThrottleAndLockoutTest extends TestCase

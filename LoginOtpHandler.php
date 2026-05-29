@@ -1,22 +1,22 @@
 <?php
 
-namespace APP\plugins\generic\twoFactorAuth;
+namespace APP\plugins\generic\loginOtp;
 
 use APP\facades\Repo;
 use APP\handler\Handler;
-use APP\plugins\generic\twoFactorAuth\classes\TwoFactorAuthDAO;
-use APP\plugins\generic\twoFactorAuth\mail\TwoFactorAuthCodeMail;
+use APP\plugins\generic\loginOtp\classes\LoginOtpDAO;
+use APP\plugins\generic\loginOtp\mail\LoginOtpCodeMail;
 use APP\template\TemplateManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use PKP\core\PKPRequest;
 use PKP\security\Validation;
 
-class TwoFactorAuthHandler extends Handler
+class LoginOtpHandler extends Handler
 {
-    private TwoFactorAuthPlugin $plugin;
+    private LoginOtpPlugin $plugin;
 
-    public function __construct(TwoFactorAuthPlugin $plugin)
+    public function __construct(LoginOtpPlugin $plugin)
     {
         $this->plugin = $plugin;
         parent::__construct();
@@ -42,7 +42,7 @@ class TwoFactorAuthHandler extends Handler
             return;
         }
 
-        $dao       = new TwoFactorAuthDAO();
+        $dao       = new LoginOtpDAO();
         $rateData  = $dao->getForUser($userId);
         $isLocked  = $this->isLockedOut($rateData);
 
@@ -57,8 +57,8 @@ class TwoFactorAuthHandler extends Handler
 
             if ($isLocked) {
                 $templateMgr->assign([
-                    'error'     => __('plugins.generic.twoFactorAuth.verify.error.locked'),
-                    'verifyUrl' => $request->url(null, 'twoFactorAuth', 'verify'),
+                    'error'     => __('plugins.generic.loginOtp.verify.error.locked'),
+                    'verifyUrl' => $request->url(null, 'loginOtp', 'verify'),
                 ]);
                 $templateMgr->display($this->plugin->getTemplateResource('verify.tpl'));
                 return;
@@ -88,14 +88,14 @@ class TwoFactorAuthHandler extends Handler
 
             $templateMgr->assign([
                 'error' => $isLocked
-                    ? __('plugins.generic.twoFactorAuth.verify.error.locked')
-                    : __('plugins.generic.twoFactorAuth.verify.error.invalidCode'),
+                    ? __('plugins.generic.loginOtp.verify.error.locked')
+                    : __('plugins.generic.loginOtp.verify.error.invalidCode'),
             ]);
         }
 
         $templateMgr->assign([
             'isLocked'  => $isLocked,
-            'verifyUrl' => $request->url(null, 'twoFactorAuth', 'verify'),
+            'verifyUrl' => $request->url(null, 'loginOtp', 'verify'),
         ]);
         $templateMgr->display($this->plugin->getTemplateResource('verify.tpl'));
     }
@@ -114,7 +114,7 @@ class TwoFactorAuthHandler extends Handler
             ? ($context->getLocalizedData('contactName') ?: $site->getLocalizedContactName())
             : $site->getLocalizedContactName();
 
-        $mailable = (new TwoFactorAuthCodeMail($code, $user->getFullName()))
+        $mailable = (new LoginOtpCodeMail($code, $user->getFullName()))
             ->to($user->getEmail(), $user->getFullName())
             ->from($fromEmail, $fromName);
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace APP\plugins\generic\loginOtp\tests;
+
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -4,7 +4,7 @@
  * Email OTP verification page.
  * Shown after correct username/password — user enters the 6-digit code received by email.
  *}
-{include file="frontend/components/header.tpl" pageTitle="plugins.generic.twoFactorAuth.verify.title"}
+{include file="frontend/components/header.tpl" pageTitle="plugins.generic.loginOtp.verify.title"}
 
 <style>
 .page_2fa_verify {
@@ -126,18 +126,18 @@
 </style>
 
 <div class="page page_2fa_verify">
-    {include file="frontend/components/breadcrumbs.tpl" currentTitleKey="plugins.generic.twoFactorAuth.verify.title"}
+    {include file="frontend/components/breadcrumbs.tpl" currentTitleKey="plugins.generic.loginOtp.verify.title"}
 
     <div class="tfa-card">
         <span class="tfa-icon" aria-hidden="true">&#128274;</span>
-        <h1>{translate key="plugins.generic.twoFactorAuth.verify.title"}</h1>
+        <h1>{translate key="plugins.generic.loginOtp.verify.title"}</h1>
 
         {if $isLocked}
             <div class="tfa-alert tfa-alert-locked">
-                {translate key="plugins.generic.twoFactorAuth.verify.error.locked"}
+                {translate key="plugins.generic.loginOtp.verify.error.locked"}
             </div>
         {else}
-            <p class="tfa-description">{translate key="plugins.generic.twoFactorAuth.verify.description"}</p>
+            <p class="tfa-description">{translate key="plugins.generic.loginOtp.verify.description"}</p>
 
             {if $error}
                 <div class="tfa-alert tfa-alert-error">{$error|escape}</div>
@@ -147,7 +147,7 @@
                 {csrf}
                 <div class="tfa-code-group">
                     <label for="tfa_code">
-                        {translate key="plugins.generic.twoFactorAuth.verify.code.label"}
+                        {translate key="plugins.generic.loginOtp.verify.code.label"}
                     </label>
                     <input
                         type="text"
@@ -160,11 +160,11 @@
                         autocomplete="one-time-code"
                         required
                         autofocus
-                        placeholder="{translate key="plugins.generic.twoFactorAuth.verify.code.placeholder"}"
+                        placeholder="{translate key="plugins.generic.loginOtp.verify.code.placeholder"}"
                     >
                 </div>
                 <button class="tfa-submit" type="submit">
-                    {translate key="plugins.generic.twoFactorAuth.verify.submit"}
+                    {translate key="plugins.generic.loginOtp.verify.submit"}
                 </button>
             </form>
         {/if}
