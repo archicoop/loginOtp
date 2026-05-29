@@ -40,11 +40,6 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 ## Installation
 
-### Via Plugin Gallery (recommended)
-
-1. In OMP/OJS, go to **Settings → Website → Plugins → Plugin Gallery**
-2. Find **Login OTP via Email** and click **Install**
-
 ### Manual installation
 
 1. Download the latest release `.tar.gz` from the [Releases](../../releases) page
@@ -159,11 +154,6 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 ---
 
 ## Installazione
-
-### Tramite Plugin Gallery (consigliato)
-
-1. In OMP/OJS, vai a **Impostazioni → Sito web → Plugin → Galleria dei plugin**
-2. Trova **Login OTP via Email** e clicca **Installa**
 
 ### Installazione manuale
 
