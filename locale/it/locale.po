@@ -47,23 +47,41 @@ msgstr "Amministratore del sito"
 msgid "plugins.generic.loginOtp.settings.role.manager"
 msgstr "Gestore"
 
+msgid "plugins.generic.loginOtp.settings.role.manager.note"
+msgstr "OMP: Press manager, Press editor, Editor di produzione · OJS: Journal manager, Editor in capo, Editor di produzione"
+
 msgid "plugins.generic.loginOtp.settings.role.subEditor"
-msgstr "Editor di sezione / serie"
+msgstr "Editor di sezione / collana"
+
+msgid "plugins.generic.loginOtp.settings.role.subEditor.note"
+msgstr "OMP: Editor di collana · OJS: Editor di sezione, Guest editor"
 
 msgid "plugins.generic.loginOtp.settings.role.reviewer"
 msgstr "Revisore"
 
+msgid "plugins.generic.loginOtp.settings.role.reviewer.note"
+msgstr "OMP: Revisore interno, Revisore esterno · OJS: Revisore esterno"
+
 msgid "plugins.generic.loginOtp.settings.role.assistant"
 msgstr "Assistente editoriale"
 
+msgid "plugins.generic.loginOtp.settings.role.assistant.note"
+msgstr "Copyeditor, Designer, Finanziatore, Indicizzatore, Layout editor, Marketing, Correttore di bozze, Componente del board editorale"
+
 msgid "plugins.generic.loginOtp.settings.role.author"
 msgstr "Autore"
+
+msgid "plugins.generic.loginOtp.settings.role.author.note"
+msgstr "OMP: Autore, Curatore del Libro, Autore di un capitolo, Traduttore · OJS: Autore, Traduttore"
 
 msgid "plugins.generic.loginOtp.settings.role.reader"
 msgstr "Lettore"
 
 msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
 msgstr "Gestore abbonamenti"
+
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager.note"
+msgstr "Solo OJS"
 
 msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Codice di accesso per la tua area riservata"

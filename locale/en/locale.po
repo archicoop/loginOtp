@@ -47,23 +47,41 @@ msgstr "Site Administrator"
 msgid "plugins.generic.loginOtp.settings.role.manager"
 msgstr "Manager"
 
+msgid "plugins.generic.loginOtp.settings.role.manager.note"
+msgstr "OMP: Press manager, Press editor, Production editor · OJS: Journal manager, Editor-in-chief, Production editor"
+
 msgid "plugins.generic.loginOtp.settings.role.subEditor"
 msgstr "Section / Series Editor"
+
+msgid "plugins.generic.loginOtp.settings.role.subEditor.note"
+msgstr "OMP: Series editor · OJS: Section editor, Guest editor"
 
 msgid "plugins.generic.loginOtp.settings.role.reviewer"
 msgstr "Reviewer"
 
+msgid "plugins.generic.loginOtp.settings.role.reviewer.note"
+msgstr "OMP: Internal reviewer, External reviewer · OJS: External reviewer"
+
 msgid "plugins.generic.loginOtp.settings.role.assistant"
 msgstr "Editorial Assistant"
 
+msgid "plugins.generic.loginOtp.settings.role.assistant.note"
+msgstr "Copyeditor, Designer, Funder, Indexer, Layout editor, Marketing, Proofreader, Editorial board member"
+
 msgid "plugins.generic.loginOtp.settings.role.author"
 msgstr "Author"
+
+msgid "plugins.generic.loginOtp.settings.role.author.note"
+msgstr "OMP: Author, Book editor, Chapter author, Translator · OJS: Author, Translator"
 
 msgid "plugins.generic.loginOtp.settings.role.reader"
 msgstr "Reader"
 
 msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
 msgstr "Subscription Manager"
+
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager.note"
+msgstr "OJS only"
 
 msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Your login verification code"

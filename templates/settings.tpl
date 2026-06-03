@@ -20,6 +20,11 @@
 						       {if in_array($roleId, $requiredRoles)}checked="checked"{/if}>
 						{translate key=$roleKey}
 					</label>
+					{if array_key_exists($roleId, $roleNotes)}
+						<div style="margin-left:1.6em; margin-top:0.1em; font-size:0.85em; color:#666;">
+							{translate key=$roleNotes[$roleId]}
+						</div>
+					{/if}
 				</li>
 			{/foreach}
 		</ul>
