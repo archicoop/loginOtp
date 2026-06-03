@@ -13,6 +13,8 @@ use PKP\linkAction\request\AjaxModal;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
 use PKP\security\Validation;
+use PKP\security\Role;
+
 
 class LoginOtpPlugin extends GenericPlugin
 {
@@ -24,6 +26,11 @@ class LoginOtpPlugin extends GenericPlugin
     public function getDescription(): string
     {
         return __('plugins.generic.loginOtp.description');
+    }
+
+    public function isSitePlugin(): bool
+    {
+        return true;
     }
 
     public function register($category, $path, $mainContextId = null): bool
@@ -66,7 +73,7 @@ class LoginOtpPlugin extends GenericPlugin
     {
         switch ($request->getUserVar('verb')) {
             case 'settings':
-                $contextId = (int)($request->getContext()?->getId() ?? 0);
+                $contextId = 0; // 0, forced by isSitePlugin()
                 $form = new LoginOtpSettingsForm($this, $contextId);
                 if ($request->getUserVar('save')) {
                     $form->readInputData();
@@ -179,13 +186,19 @@ class LoginOtpPlugin extends GenericPlugin
      */
     private function userRequires2FA(int $userId, $request): bool
     {
-        $contextId = (int)($request->getContext()?->getId() ?? 0);
-        $requiredRoles = $this->getSetting($contextId, 'requiredRoles');
+        $row = DB::table('site_settings')
+            ->where('setting_name', 'loginOtp::requiredRoles')
+            ->first();
+
+        error_log('loginOtp debug - row: ' . json_encode($row));
+        error_log('loginOtp debug - userId: ' . $userId);
 
         // Not configured yet → require 2FA for everyone
-        if ($requiredRoles === null) {
+        if ($row === null) {
             return true;
         }
+
+        $requiredRoles = json_decode($row->setting_value, true) ?? [];
 
         // Explicitly empty → no one needs 2FA
         if (empty($requiredRoles)) {
@@ -193,7 +206,6 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         // Role hierarchy: most privileged first.
-        // The first match determines the outcome.
         $roleHierarchy = [
             Role::ROLE_ID_SITE_ADMIN,
             Role::ROLE_ID_MANAGER,
@@ -205,7 +217,6 @@ class LoginOtpPlugin extends GenericPlugin
             Role::ROLE_ID_SUBSCRIPTION_MANAGER,
         ];
 
-        // Get all role IDs assigned to the user (across all contexts)
         $userRoleIds = DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
@@ -213,14 +224,12 @@ class LoginOtpPlugin extends GenericPlugin
             ->unique()
             ->toArray();
 
-        // Find the user's highest-privilege role and check if it requires 2FA
         foreach ($roleHierarchy as $role) {
             if (in_array($role, $userRoleIds)) {
                 return in_array($role, $requiredRoles);
             }
         }
 
-        // User has no recognised role → require 2FA as a safety default
         return true;
     }
 }

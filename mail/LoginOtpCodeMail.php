@@ -29,11 +29,18 @@ class LoginOtpCodeMail extends Mailable
         $code    = htmlspecialchars($this->code, ENT_QUOTES, 'UTF-8');
         $name    = htmlspecialchars($this->userName, ENT_QUOTES, 'UTF-8');
         $minutes = (int) $this->minutes;
-        $body    = nl2br(htmlspecialchars(
-            __('plugins.generic.loginOtp.email.body', [
-                'code'    => $this->code,
+
+        $bodyBefore = nl2br(htmlspecialchars(
+            __('plugins.generic.loginOtp.email.bodyBefore', [
+                'name' => $this->userName,
+            ]),
+            ENT_QUOTES,
+            'UTF-8'
+        ));
+
+        $bodyAfter = nl2br(htmlspecialchars(
+            __('plugins.generic.loginOtp.email.bodyAfter', [
                 'minutes' => $this->minutes,
-                'name'    => $this->userName,
             ]),
             ENT_QUOTES,
             'UTF-8'
@@ -49,7 +56,9 @@ class LoginOtpCodeMail extends Mailable
         <!DOCTYPE html>
         <html>
         <body style="font-family:Arial,sans-serif; font-size:15px; color:#222; max-width:500px; margin:0 auto; padding:20px;">
-            <p>{$body}</p>
+            <p>{$bodyBefore}</p>
+            <p style="font-size:28px; font-weight:bold; letter-spacing:6px; text-align:center; padding:16px; background:#f5f5f5; border-radius:6px;">{$code}</p>
+            <p>{$bodyAfter}</p>
             <p style="font-size:13px; color:#666; margin-top:30px; border-top:1px solid #eee; padding-top:10px;">
                 {$footer}
             </p>

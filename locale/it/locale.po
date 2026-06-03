@@ -68,8 +68,11 @@ msgstr "Gestore abbonamenti"
 msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Codice di accesso per la tua area riservata"
 
-msgid "plugins.generic.loginOtp.email.body"
-msgstr "Gentile {$name},\n\nil tuo codice di verifica per l'accesso è:\n\n    {$code}\n\nIl codice è valido per {$minutes} minuti.\n\nSe non hai richiesto l'accesso, ignora questa email."
+msgid "plugins.generic.loginOtp.email.bodyBefore"
+msgstr "Gentile {$name},\n\nil tuo codice di verifica per l'accesso è:"
+
+msgid "plugins.generic.loginOtp.email.bodyAfter"
+msgstr "Il codice è valido per {$minutes} minuti.\n\nSe non hai richiesto l'accesso, ignora questa email."
 
 msgid "plugins.generic.loginOtp.email.footer"
 msgstr "Questo messaggio è stato generato automaticamente. Non rispondere a questa email."

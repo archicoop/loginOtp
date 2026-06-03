@@ -68,8 +68,11 @@ msgstr "Subscription Manager"
 msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Your login verification code"
 
-msgid "plugins.generic.loginOtp.email.body"
-msgstr "Dear {$name},\n\nyour verification code to log in is:\n\n    {$code}\n\nThe code is valid for {$minutes} minutes.\n\nIf you did not request access, please ignore this email."
+msgid "plugins.generic.loginOtp.email.bodyBefore"
+msgstr "Dear {$name},\n\nyour verification code to log in is:"
+
+msgid "plugins.generic.loginOtp.email.bodyAfter"
+msgstr "The code is valid for {$minutes} minutes.\n\nIf you did not request access, please ignore this email."
 
 msgid "plugins.generic.loginOtp.email.footer"
 msgstr "This message was generated automatically. Please do not reply to this email."
