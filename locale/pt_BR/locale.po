@@ -19,7 +19,7 @@ msgid "plugins.generic.loginOtp.verify.title"
 msgstr "Verificar identidade"
 
 msgid "plugins.generic.loginOtp.verify.description"
-msgstr "Enviamos um código de verificação de 6 dígitos para o seu endereço de e-mail cadastrado. Digite-o abaixo. O código expira em 10 minutes."
+msgstr "Enviamos um código de verificação de 6 dígitos para o seu endereço de e-mail cadastrado. Digite-o abaixo. O código expira em 10 minutos."
 
 msgid "plugins.generic.loginOtp.verify.code.label"
 msgstr "Código de verificação"
@@ -45,35 +45,35 @@ msgstr "Selecione os papéis para os quais a verificação por e-mail é obrigat
 msgid "plugins.generic.loginOtp.settings.role.siteAdmin"
 msgstr "Administrador do Portal"
 
-msgid "plugins.generic.loginotp.settings.role.manager"
+msgid "plugins.generic.loginOtp.settings.role.manager"
 msgstr "Gerente"
 
-msgid "plugins.generic.loginotp.settings.role.subeditor"
-msgstr "Editor de seção"
+msgid "plugins.generic.loginOtp.settings.role.subEditor"
+msgstr "Editor de Seção / Série"
 
-msgid "plugins.generic.loginotp.settings.role.reviewer"
+msgid "plugins.generic.loginOtp.settings.role.reviewer"
 msgstr "Avaliador"
 
-msgid "plugins.generic.loginotp.settings.role.assistant"
-msgstr "Editor Assistente"
+msgid "plugins.generic.loginOtp.settings.role.assistant"
+msgstr "Assistente Editorial"
 
-msgid "plugins.generic.loginotp.settings.role.author"
+msgid "plugins.generic.loginOtp.settings.role.author"
 msgstr "Autor"
 
-msgid "plugins.generic.loginotp.settings.role.reader"
+msgid "plugins.generic.loginOtp.settings.role.reader"
 msgstr "Leitor"
 
-msgid "plugins.generic.loginotp.settings.role.subscriptionmanager"
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
 msgstr "Gerente de Assinaturas"
 
-msgid "plugins.generic.loginotp.email.subject"
+msgid "plugins.generic.loginOtp.email.subject"
 msgstr "Seu código de verificação de login"
 
-msgid "plugins.generic.loginotp.email.bodybefore"
+msgid "plugins.generic.loginOtp.email.bodyBefore"
 msgstr "Prezado(a) {$name},\n\nseu código de verificação para acessar o sistema é:"
 
-msgid "plugins.generic.loginotp.email.bodyafter"
+msgid "plugins.generic.loginOtp.email.bodyAfter"
 msgstr "O código é válido por {$minutes} minutos.\n\nSe você não solicitou este acesso, por favor ignore este e-mail."
 
-msgid "plugins.generic.loginotp.email.footer"
+msgid "plugins.generic.loginOtp.email.footer"
 msgstr "Esta mensagem foi gerada automaticamente. Por favor, não responda a este e-mail."
