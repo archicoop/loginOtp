@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: loginOtp 1.0.0\n"
+"POT-Creation-Date: 2025-05-07\n"
+"PO-Revision-Date: 2026-06-03\n"
+"Last-Translator: Lury Morais\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.loginOtp.displayName"
+msgstr "Login OTP por E-mail"
+
+msgid "plugins.generic.loginOtp.description"
+msgstr "Adiciona autenticação de dois fatores ao processo de login, enviando um código temporário por e-mail. Obrigatório para todos os usuários. Compatível com ACN e GDPR (equivalentes à LGPD)."
+
+msgid "plugins.generic.loginOtp.verify.title"
+msgstr "Verificar identidade"
+
+msgid "plugins.generic.loginOtp.verify.description"
+msgstr "Enviamos um código de verificação de 6 dígitos para o seu endereço de e-mail cadastrado. Digite-o abaixo. O código expira em 10 minutos."
+
+msgid "plugins.generic.loginOtp.verify.code.label"
+msgstr "Código de verificação"
+
+msgid "plugins.generic.loginOtp.verify.code.placeholder"
+msgstr "000000"
+
+msgid "plugins.generic.loginOtp.verify.submit"
+msgstr "Verificar e fazer login"
+
+msgid "plugins.generic.loginOtp.verify.error.invalidCode"
+msgstr "Código inválido. Verifique seu e-mail e tente novamente."
+
+msgid "plugins.generic.loginOtp.verify.error.locked"
+msgstr "Muitas tentativas incorretas. Seu acesso foi bloqueado por 15 minutos. Por favor, tente novamente mais tarde."
+
+msgid "plugins.generic.loginOtp.settings.requiredRoles.title"
+msgstr "Papéis que exigem verificação em duas etapas"
+
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
+msgstr "Selecione os papéis para os quais a verificação por e-mail é obrigatória. Se nenhum papel for selecionado, a autenticação de dois fatores (2FA) ficará desativada para todos os usuários."
+
+msgid "plugins.generic.loginOtp.settings.role.siteAdmin"
+msgstr "Administrador do Portal"
+
+msgid "plugins.generic.loginOtp.settings.role.manager"
+msgstr "Gerente"
+
+msgid "plugins.generic.loginOtp.settings.role.subEditor"
+msgstr "Editor de Seção / Série"
+
+msgid "plugins.generic.loginOtp.settings.role.reviewer"
+msgstr "Avaliador"
+
+msgid "plugins.generic.loginOtp.settings.role.assistant"
+msgstr "Assistente Editorial"
+
+msgid "plugins.generic.loginOtp.settings.role.author"
+msgstr "Autor"
+
+msgid "plugins.generic.loginOtp.settings.role.reader"
+msgstr "Leitor"
+
+msgid "plugins.generic.loginOtp.settings.role.subscriptionManager"
+msgstr "Gerente de Assinaturas"
+
+msgid "plugins.generic.loginOtp.email.subject"
+msgstr "Seu código de verificação de login"
+
+msgid "plugins.generic.loginOtp.email.bodyBefore"
+msgstr "Prezado(a) {$name},\n\nseu código de verificação para acessar o sistema é:"
+
+msgid "plugins.generic.loginOtp.email.bodyAfter"
+msgstr "O código é válido por {$minutes} minutos.\n\nSe você não solicitou este acesso, por favor ignore este e-mail."
+
+msgid "plugins.generic.loginOtp.email.footer"
+msgstr "Esta mensagem foi gerada automaticamente. Por favor, não responda a este e-mail."
