@@ -21,6 +21,15 @@ class LoginOtpSettingsForm extends Form
         Role::ROLE_ID_SUBSCRIPTION_MANAGER => 'plugins.generic.loginOtp.settings.role.subscriptionManager',
     ];
 
+    public const ROLE_NOTES = [
+        Role::ROLE_ID_MANAGER              => 'plugins.generic.loginOtp.settings.role.manager.note',
+        Role::ROLE_ID_SUB_EDITOR           => 'plugins.generic.loginOtp.settings.role.subEditor.note',
+        Role::ROLE_ID_REVIEWER             => 'plugins.generic.loginOtp.settings.role.reviewer.note',
+        Role::ROLE_ID_ASSISTANT            => 'plugins.generic.loginOtp.settings.role.assistant.note',
+        Role::ROLE_ID_AUTHOR               => 'plugins.generic.loginOtp.settings.role.author.note',
+        Role::ROLE_ID_SUBSCRIPTION_MANAGER => 'plugins.generic.loginOtp.settings.role.subscriptionManager.note',
+    ];
+
     public function __construct(
         private LoginOtpPlugin $plugin,
         private int            $contextId
@@ -43,6 +52,7 @@ class LoginOtpSettingsForm extends Form
 
         $this->setData('requiredRoles', $saved);
         $this->setData('allRoles', self::ROLES);
+        $this->setData('roleNotes', self::ROLE_NOTES);
         $this->setData('pluginName', $this->plugin->getName());
     }
 

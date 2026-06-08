@@ -149,18 +149,20 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         $dao = new LoginOtpDAO();
+        $session = $request->getSession();
 
-        // Throttle: send at most one OTP per 60 seconds
-        if ($dao->isOtpThrottled($user->getId())) {
+        $pendingCode = $session->get('2fa_pending_code');
+        $pendingExpires = (int) $session->get('2fa_pending_expires');
+        $hasValidPendingCode = $pendingCode && time() < $pendingExpires;
+
+        if ($dao->isOtpThrottled($user->getId()) && $hasValidPendingCode) {
             $request->redirect(null, 'loginOtp', 'verify');
             return Hook::ABORT;
         }
 
-        // Generate OTP and store its hash in session (never the plain code)
         $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $codeHash = hash('sha256', $code);
 
-        $session = $request->getSession();
         $session->put('2fa_pending_user_id', $user->getId());
         $session->put('2fa_pending_expires', time() + 600);    // 10 minutes
         $session->put('2fa_pending_code', $codeHash);
@@ -189,9 +191,6 @@ class LoginOtpPlugin extends GenericPlugin
         $row = DB::table('site_settings')
             ->where('setting_name', 'loginOtp::requiredRoles')
             ->first();
-
-        error_log('loginOtp debug - row: ' . json_encode($row));
-        error_log('loginOtp debug - userId: ' . $userId);
 
         // Not configured yet → require 2FA for everyone
         if ($row === null) {
