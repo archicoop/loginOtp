@@ -113,6 +113,7 @@ class LoginOtpPlugin extends GenericPlugin
 
     private function interceptSignIn($request): bool
     {
+
         if (!$request->checkCSRF()) {
             return Hook::CONTINUE;
         }
@@ -211,10 +212,22 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         // Regola 3: non configurato per questa rivista → default sicuro
-        $requiredRoles = $this->getSetting($contextId, 'requiredRoles');
+/*        $requiredRoles = $this->getSetting($contextId, 'requiredRoles');
         if ($requiredRoles === null) {
             return true;
+        }*/
+
+        // Regola 3: non configurato → default sicuro
+        // TODO: temporaneo (lettura da site_settings, allineata al form).
+        // Quando arriverà la modifica 2 (settings per-rivista), tornare a
+        // leggere via $this->getSetting($contextId, 'requiredRoles').
+        $row = DB::table('site_settings')
+            ->where('setting_name', 'loginOtp::requiredRoles')
+            ->first();
+        if ($row === null) {
+            return true;
         }
+        $requiredRoles = json_decode($row->setting_value, true) ?? [];
 
         // Regola 4: logica OR sui ruoli dell'utente IN QUESTA rivista
         $userRoleIds = $this->getUserRoleIdsInContext($userId, $contextId);
