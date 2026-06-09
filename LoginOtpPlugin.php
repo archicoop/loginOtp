@@ -177,58 +177,70 @@ class LoginOtpPlugin extends GenericPlugin
     }
 
     /**
-     * Returns true if the user's highest-privilege role requires 2FA.
+     * Determina se il login richiede la 2FA.
      *
-     * Logica a priorità: il ruolo più elevato dell'utente determina la policy.
-     * Se un utente è Site Admin e Site Admin è esente, la 2FA non viene richiesta
-     * anche se l'utente ha ruoli meno privilegiati (Manager, Author, ecc.)
-     * per cui la 2FA è attiva.
+     * Regole, in ordine di precedenza:
+     *  1. Login a livello sito (nessuna rivista) → sempre 2FA.
+     *  2. Utente con ruolo Site Administrator → sempre 2FA.
+     *  3. Impostazione non configurata per la rivista → default sicuro: 2FA.
+     *  4. Logica OR: se almeno un ruolo dell'utente in questa rivista è tra
+     *     quelli soggetti a 2FA → 2FA.
      *
-     * Null setting = not configured → apply to all (backward compatible default).
+     * NOTA: l'eventuale "floor" sul ruolo Journal Manager (sempre 2FA, non
+     * disattivabile dal manager) è in attesa di conferma dal PM. Andrebbe
+     * inserito come Regola 2-bis, prima della logica OR.
      */
     private function userRequires2FA(int $userId, $request): bool
     {
-        $row = DB::table('site_settings')
-            ->where('setting_name', 'loginOtp::requiredRoles')
-            ->first();
+        $context = $request->getContext();
 
-        // Not configured yet → require 2FA for everyone
-        if ($row === null) {
+        // Regola 1: login di sito → sempre 2FA
+        if ($context === null || (int)$context->getId() === 0) {
+            return true;
+        }
+        $contextId = (int)$context->getId();
+
+        // Regola 2: Site Admin → sempre 2FA (ruolo non legato a una rivista)
+        if ($this->userHasRole($userId, Role::ROLE_ID_SITE_ADMIN)) {
             return true;
         }
 
-        $requiredRoles = json_decode($row->setting_value, true) ?? [];
-
-        // Explicitly empty → no one needs 2FA
-        if (empty($requiredRoles)) {
-            return false;
+        // Regola 2-bis (in attesa di conferma PM): Journal Manager sempre 2FA
+        if (in_array(Role::ROLE_ID_MANAGER, $this->getUserRoleIdsInContext($userId, $contextId))) {
+            return true;
         }
 
-        // Role hierarchy: most privileged first.
-        $roleHierarchy = [
-            Role::ROLE_ID_SITE_ADMIN,
-            Role::ROLE_ID_MANAGER,
-            Role::ROLE_ID_SUB_EDITOR,
-            Role::ROLE_ID_ASSISTANT,
-            Role::ROLE_ID_REVIEWER,
-            Role::ROLE_ID_AUTHOR,
-            Role::ROLE_ID_READER,
-            Role::ROLE_ID_SUBSCRIPTION_MANAGER,
-        ];
+        // Regola 3: non configurato per questa rivista → default sicuro
+        $requiredRoles = $this->getSetting($contextId, 'requiredRoles');
+        if ($requiredRoles === null) {
+            return true;
+        }
 
-        $userRoleIds = DB::table('user_groups as ug')
+        // Regola 4: logica OR sui ruoli dell'utente IN QUESTA rivista
+        $userRoleIds = $this->getUserRoleIdsInContext($userId, $contextId);
+        return !empty(array_intersect($requiredRoles, $userRoleIds));
+    }
+
+    /** True se l'utente ha il ruolo indicato in una qualsiasi rivista. */
+    private function userHasRole(int $userId, int $roleId): bool
+    {
+        return DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
+            ->where('ug.role_id', $roleId)
+            ->exists();
+    }
+
+    /** Ruoli dell'utente nella rivista indicata. */
+    private function getUserRoleIdsInContext(int $userId, int $contextId): array
+    {
+        return DB::table('user_groups as ug')
+            ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
+            ->where('uug.user_id', $userId)
+            ->where('ug.context_id', $contextId)
             ->pluck('ug.role_id')
             ->unique()
+            ->values()
             ->toArray();
-
-        foreach ($roleHierarchy as $role) {
-            if (in_array($role, $userRoleIds)) {
-                return in_array($role, $requiredRoles);
-            }
-        }
-
-        return true;
     }
 }
