@@ -30,7 +30,7 @@ class LoginOtpPlugin extends GenericPlugin
 
     public function isSitePlugin(): bool
     {
-        return true;
+        return false;
     }
 
     public function register($category, $path, $mainContextId = null): bool
@@ -38,9 +38,8 @@ class LoginOtpPlugin extends GenericPlugin
         if (!parent::register($category, $path, $mainContextId)) {
             return false;
         }
-        if ($this->getEnabled($mainContextId)) {
-            Hook::add('LoadHandler', $this->handleLoadHandler(...));
-        }
+
+        Hook::add('LoadHandler', $this->handleLoadHandler(...));
         return true;
     }
 
@@ -113,6 +112,13 @@ class LoginOtpPlugin extends GenericPlugin
 
     private function interceptSignIn($request): bool
     {
+
+        $context = $request->getContext();
+        $contextId = $context? (int)$context->contextId : 0;
+
+        if($contextId > 0 && !$this->getEnabled($contextId)) {
+            return Hook::CONTINUE;
+        }
 
         if (!$request->checkCSRF()) {
             return Hook::CONTINUE;
