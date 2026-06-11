@@ -26,7 +26,7 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Plugin version | OMP   | OJS   |
 |----------------|-------|-------|
-| 1.0.0          | 3.5.x | 3.5.x |
+| 1.0.1          | 3.5.x | 3.5.x |
 
 ---
 
@@ -93,7 +93,7 @@ Make sure OMP/OJS is configured to send emails. See the `[email]` section in `co
 
 ---
 
-## Running tests
+## Running tests (for contributors)
 
 ```bash
 php lib/pkp/lib/vendor/bin/phpunit \
@@ -148,7 +148,7 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Versione plugin | OMP   | OJS   |
 |-----------------|-------|-------|
-| 1.0.0           | 3.5.x | 3.5.x |
+| 1.0.1           | 3.5.x | 3.5.x |
 
 ---
 
@@ -214,7 +214,7 @@ Assicurati che OMP/OJS sia configurato per l'invio email. Vedi la sezione `[emai
 
 ---
 
-## Esecuzione dei test
+## Esecuzione dei test (per contributori)
 
 ```bash
 php lib/pkp/lib/vendor/bin/phpunit \
