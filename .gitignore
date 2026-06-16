@@ -19,3 +19,6 @@ CLAUDE.md
 
 # Cache PHPUnit
 .phpunit.result.cache
+
+#file debug
+debug.log

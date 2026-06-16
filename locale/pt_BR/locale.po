@@ -77,3 +77,6 @@ msgstr "O código é válido por {$minutes} minutos.\n\nSe você não solicitou 
 
 msgid "plugins.generic.loginOtp.email.footer"
 msgstr "Esta mensagem foi gerada automaticamente. Por favor, não responda a este e-mail."
+
+msgid "plugins.generic.loginOtp.settings.error.noContext"
+msgstr "As configurações do Login OTP só podem ser configuradas no contexto de uma revista."

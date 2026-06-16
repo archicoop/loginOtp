@@ -94,3 +94,6 @@ msgstr "The code is valid for {$minutes} minutes.\n\nIf you did not request acce
 
 msgid "plugins.generic.loginOtp.email.footer"
 msgstr "This message was generated automatically. Please do not reply to this email."
+
+msgid "plugins.generic.loginOtp.settings.error.noContext"
+msgstr "Login OTP settings can only be configured from within a journal context."
