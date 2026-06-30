@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Site-level login interception: a new `Authentication::authenticate` hook
+  intercepts login attempts on the global (site-level) login form. Site-level
+  login always requires OTP, regardless of per-journal configuration.
+- Site-wide rules for elevated roles: a Site Administrator now always requires
+  OTP, on any journal and at site level. A Journal Manager in any journal of
+  the site now always requires OTP on any journal, symmetrically to Site Admin.
+  This replaces the previous "Journal Manager of the current journal" rule,
+  which produced inconsistent behaviour for managers logging into journals they
+  did not manage.
+- Cautious default for external users: a user with no roles in the journal they
+  are logging into now always receives OTP, regardless of the per-journal
+  configuration. Logging into a journal where the user has no roles is treated
+  as equivalent to a site-level login.
+- Documented opt-out mechanism: to opt a journal out of OTP for ordinary roles,
+  a Journal Manager (or Site Administrator) can save the journal's required-roles
+  list with no roles selected. The README documents this as the intended
+  mechanism, together with its scope (Site Admin, Journal Manager, and external
+  users still receive OTP via the rules above).
+
+### Changed
+- OTP enforcement logic: switching from "highest-privilege role wins" to OR logic
+  (OTP is required if the user has *any* of the selected roles).
+- Settings storage: returning to per-journal `plugin_settings` (instead of the
+  site-wide `site_settings` used in 1.0.1).
+- Plugin architecture: the plugin now registers as a site plugin
+  (`isSitePlugin()` returns `true`) but cannot be disabled (`getCanDisable()`
+  returns `false`). It runs as an always-active system component;
+  administrators and Journal Managers configure required roles per journal,
+  but cannot turn the plugin off.
+- Configuration scope: settings are now per-journal again. Each journal has
+  its own required-roles list, configurable by both the Site Administrator
+  (via Hosted Journals) and the journal's Manager (via the journal's Plugins
+  panel). There is no longer a single site-wide configuration.
+- README structure: the "Role hierarchy" section (introduced in 1.0.1 to
+  describe the highest-wins cascade) has been removed; the Configuration
+  section now documents the new OR-based rule set with explicit examples and
+  a "Known limitation" note for the opt-out behaviour.
+
+### Removed
+- Role hierarchy logic ("highest-privilege role wins") and the visual cascade
+  in the settings form that disabled lower-privilege checkboxes. Both were
+  tied to the 1.0.1 cascade model and are no longer meaningful under OR logic.
+- Per-journal enable/disable toggle for the plugin. The plugin is now always
+  active; the only configuration is the required-roles list per journal.
+
 ## [1.0.1] - 2026-06-08
 
 First publicly documented release. Supersedes 1.0.0, which was patched in place
@@ -55,6 +103,7 @@ Initial release.
 - Sanitisation of the post-login redirect URL to prevent open-redirect attacks.
 - English (`en`) and Italian (`it`) localizations.
 
-[Unreleased]: https://github.com/archicoop/loginOtp/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/archicoop/loginOtp/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/archicoop/loginOtp/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/archicoop/loginOtp/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/archicoop/loginOtp/releases/tag/v1.0.0

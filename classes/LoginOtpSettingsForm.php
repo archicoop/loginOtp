@@ -5,7 +5,6 @@ namespace APP\plugins\generic\loginOtp\classes;
 use APP\plugins\generic\loginOtp\LoginOtpPlugin;
 use PKP\form\Form;
 use PKP\security\Role;
-use Illuminate\Support\Facades\DB;
 
 class LoginOtpSettingsForm extends Form
 {
@@ -39,15 +38,11 @@ class LoginOtpSettingsForm extends Form
 
     public function initData(): void
     {
-        $row = DB::table('site_settings')
-            ->where('setting_name', 'loginOtp::requiredRoles')
-            ->first();
+        $saved = $this->plugin->getSetting($this->contextId, 'requiredRoles');
 
-        if ($row === null) {
-            // Not configured yet → require 2FA for all roles
+        if ($saved === null) {
+            // Not configured yet → require 2FA for all roles (fail-safe default)
             $saved = array_keys(self::ROLES);
-        } else {
-            $saved = json_decode($row->setting_value, true) ?? [];
         }
 
         $this->setData('requiredRoles', $saved);
@@ -64,10 +59,7 @@ class LoginOtpSettingsForm extends Form
     public function execute(...$functionArgs): void
     {
         $roles = array_map('intval', (array)($this->getData('requiredRoles') ?? []));
-        DB::table('site_settings')->updateOrInsert(
-            ['setting_name' => 'loginOtp::requiredRoles'],
-            ['setting_value' => json_encode($roles), 'locale' => '']
-        );
+        $this->plugin->updateSetting($this->contextId, 'requiredRoles', $roles, 'object');
         parent::execute(...$functionArgs);
     }
 }
