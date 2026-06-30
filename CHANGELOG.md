@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Work in progress for the next major release (2.0.0).
-
 ### Added
 - Site-level login interception: a new `Authentication::authenticate` hook
   intercepts login attempts on the global (site-level) login form. Site-level
@@ -105,6 +103,7 @@ Initial release.
 - Sanitisation of the post-login redirect URL to prevent open-redirect attacks.
 - English (`en`) and Italian (`it`) localizations.
 
-[Unreleased]: https://github.com/archicoop/loginOtp/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/archicoop/loginOtp/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/archicoop/loginOtp/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/archicoop/loginOtp/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/archicoop/loginOtp/releases/tag/v1.0.0

@@ -27,7 +27,7 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Plugin version | OMP   | OJS   |
 |----------------|-------|-------|
-| 2.0.0-beta     | 3.5.x | 3.5.x |
+| 2.0.0          | 3.5.x | 3.5.x |
 
 ---
 
@@ -190,7 +190,7 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Versione plugin | OMP   | OJS   |
 |-----------------|-------|-------|
-| 2.0.0-beta      | 3.5.x | 3.5.x |
+| 2.0.0           | 3.5.x | 3.5.x |
 
 ---
 
