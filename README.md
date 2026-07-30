@@ -27,7 +27,7 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Plugin version | OMP   | OJS   |
 |----------------|-------|-------|
-| 2.0.0          | 3.5.x | 3.5.x |
+| 2.0.1          | 3.5.x | 3.5.x |
 
 ---
 
@@ -119,6 +119,37 @@ Note that Rules 1–4 still cover the most sensitive cases regardless of the per
 
 Make sure OMP/OJS is configured to send emails. See the `[email]` section in `config.inc.php`. The plugin uses whatever transport is already configured (SMTP, sendmail, etc.).
 
+### Emergency disable
+
+In case the OTP flow cannot complete for reasons outside the plugin's
+control — a broken email transport, a misconfigured SMTP relay, or a bug
+that breaks the code-verification path — the plugin would otherwise lock
+every user out of any login form that requires OTP, including all Site
+Administrator logins. There would be no way to reach the OJS/OMP admin
+panel to disable or uninstall the plugin.
+
+To recover from such a situation, a sysadmin with access to
+`config.inc.php` can add:
+
+```ini
+[loginOtp]
+disabled = On
+```
+
+When this flag is `On`, the plugin **does not register any hook** and
+behaves as if it were not installed: logins proceed through the standard
+core flow with no OTP challenge. The flag has effect immediately after
+the PHP process is restarted (`ddev restart`, `service php-fpm reload`,
+or equivalent).
+
+This is a **recovery mechanism**, not a runtime configuration. Enabling
+it disables the plugin's security guarantees for the entire site. It
+should only be used to regain access, diagnose the underlying issue, and
+then be removed once the OTP flow is restored.
+
+The flag defaults to `Off` when absent. No change to `config.inc.php`
+is required for normal operation.
+
 ---
 
 ## Security notes
@@ -190,7 +221,7 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Versione plugin | OMP   | OJS   |
 |-----------------|-------|-------|
-| 2.0.0           | 3.5.x | 3.5.x |
+| 2.0.1           | 3.5.x | 3.5.x |
 
 ---
 
@@ -281,6 +312,38 @@ Le regole 1–4 coprono comunque i casi più sensibili indipendentemente dalla l
 ### Configurazione email
 
 Assicurati che OMP/OJS sia configurato per l'invio email. Vedi la sezione `[email]` in `config.inc.php`. Il plugin usa il trasporto già configurato (SMTP, sendmail, ecc.).
+
+### Disabilitazione di emergenza
+
+Se il flusso OTP non riesce a completarsi per ragioni fuori dal controllo
+del plugin — un trasporto email guasto, un relay SMTP mal configurato, un
+bug che rompe la verifica del codice — il plugin bloccherebbe altrimenti
+tutti gli utenti su qualsiasi form di login che richiede OTP, compresi
+tutti i login degli Amministratori del sito. Non ci sarebbe modo di
+raggiungere il pannello di amministrazione OJS/OMP per disabilitare o
+disinstallare il plugin.
+
+Per uscire da una situazione del genere, un amministratore di sistema
+con accesso a `config.inc.php` può aggiungere:
+
+```ini
+[loginOtp]
+disabled = On
+```
+
+Quando questo flag è `On`, il plugin **non registra alcun hook** e si
+comporta come se non fosse installato: i login procedono attraverso il
+flusso standard del core senza richiesta OTP. Il flag ha effetto
+immediatamente dopo il riavvio del processo PHP (`ddev restart`,
+`service php-fpm reload`, o equivalente).
+
+Questo è un **meccanismo di recupero**, non una configurazione di
+esercizio. Attivarlo disabilita le garanzie di sicurezza del plugin per
+l'intero sito. Va usato solo per riprendere l'accesso, diagnosticare il
+problema sottostante e poi rimosso una volta ripristinato il flusso OTP.
+
+Il flag ha default `Off` se assente. Nessuna modifica a `config.inc.php`
+è necessaria per il funzionamento normale.
 
 ---
 
