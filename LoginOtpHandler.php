@@ -175,6 +175,12 @@ class LoginOtpHandler extends Handler
 
         $this->clearPendingSession($session);
 
+        if ($user->getMustChangePassword()) {
+            Validation::logout();
+            $request->redirect(null, 'login', 'changePassword', [$user->getUsername()]);
+            return;
+        }
+
         if (preg_match('#^/\w#', $source)) {
             $request->redirectUrl($source);
         } else {
