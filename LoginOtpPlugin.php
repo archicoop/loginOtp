@@ -49,7 +49,7 @@ class LoginOtpPlugin extends GenericPlugin
             return true;
         }
 
-        Hook::add('LoadHandler', $this->handleLoadHandler(...));
+        Hook::add('LoadHandler', $this->handleLoadHandler(...), Hook::SEQUENCE_CORE);
 
         return true;
     }
