@@ -5,7 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.1] - 2026-07-30
+
+### Fixed
+- `must_change_password` bypass after OTP validation: users with an
+  administratively-forced password change were reaching the dashboard
+  without seeing the password-change screen enforced by the core. The
+  plugin now emulates the core behaviour and redirects to
+  `login/changePassword` after successful OTP, ensuring the mandatory
+  change is not skipped.
+
+### Added
+- Emergency-disable flag in `config.inc.php` (`[loginOtp] disabled = On`).
+  When set, the plugin skips hook registration entirely and behaves as if
+  it were not installed. Intended as a sysadmin-level safety net when the
+  OTP flow cannot complete (for example a broken email transport locking
+  every user out of site-level login).
+
+### Changed
+- The `LoadHandler` hook is now registered with `Hook::SEQUENCE_CORE`
+  priority. Previously registered with the implicit default, this could
+  leave the ordering relative to other plugins on the same hook
+  indeterministic — undesirable for a 2FA plugin.
+
+### Removed
+- Dead `Authentication::authenticate` hook registration and its four
+  unused helper methods (`handleAuthenticate`, `userRequires2FAForAnyContext`,
+  `getAllUserRolesByContext`, `storePendingUserInSession`). The hook does
+  not exist in OJS/OMP 3.5 core, so the code was never reached at runtime.
+  Site-level OTP enforcement continues to work via the `LoadHandler` path
+  and Rule 1 in `userRequires2FA()`, as documented.
+
+## [2.0.0] - 2026-06-30
 
 ### Added
 - Site-level login interception: a new `Authentication::authenticate` hook
@@ -103,7 +134,8 @@ Initial release.
 - Sanitisation of the post-login redirect URL to prevent open-redirect attacks.
 - English (`en`) and Italian (`it`) localizations.
 
-[Unreleased]: https://github.com/archicoop/loginOtp/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/archicoop/loginOtp/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/archicoop/loginOtp/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/archicoop/loginOtp/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/archicoop/loginOtp/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/archicoop/loginOtp/releases/tag/v1.0.0
