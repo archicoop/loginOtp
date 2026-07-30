@@ -50,7 +50,6 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         Hook::add('LoadHandler', $this->handleLoadHandler(...));
-        Hook::add('Authentication::authenticate', $this->handleAuthenticate(...));
 
         return true;
     }
@@ -125,125 +124,6 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         return Hook::CONTINUE;
-    }
-
-    /**
-     * Gestisce l'autenticazione per login di SITO
-     */
-    public function handleAuthenticate($hookName, $args): bool
-    {
-        $authenticated = &$args[3];
-        $user = &$args[4];
-        $reason = &$args[2];
-
-        // Se autenticazione già fallita, esci
-        if (!$authenticated || !$user) {
-            return Hook::CONTINUE;
-        }
-
-        $request = Application::get()->getRequest();
-        $context = $request->getContext();
-
-        // Se c'è un contesto (rivista), lascia gestire a LoadHandler
-        if ($context !== null && $context->getId() > 0) {
-            return Hook::CONTINUE;
-        }
-
-        // LOGIN DI SITO - verifica se richiede OTP
-        if ($this->userRequires2FAForAnyContext($user->getId())) {
-            $this->storePendingUserInSession($user, $request);
-            $authenticated = false;
-            $reason = 'otp_required';
-            return Hook::ABORT;
-        }
-
-        return Hook::CONTINUE;
-    }
-
-    /**
-     * Determina se l'utente richiede 2FA in ALMENO UNA rivista (logica OR)
-     *
-     * @param int $userId
-     * @return bool
-     */
-    private function userRequires2FAForAnyContext(int $userId): bool
-    {
-        // 1. Site Admin richiede sempre 2FA
-        if ($this->userHasRole($userId, Role::ROLE_ID_SITE_ADMIN)) {
-            return true;
-        }
-
-        // 2. Ottieni TUTTI i ruoli dell'utente in TUTTE le riviste
-        $userRolesByContext = $this->getAllUserRolesByContext($userId);
-
-        if (empty($userRolesByContext)) {
-            return false;
-        }
-
-        // 3. Per OGNI rivista in cui l'utente ha ruoli, controlla se richiede OTP
-        foreach ($userRolesByContext as $contextId => $roleIds) {
-            // Recupera le impostazioni OTP per questa rivista
-            $requiredRoles = $this->getSetting($contextId, 'requiredRoles');
-
-            // Se la rivista non ha configurazione OTP, salta (default: no OTP)
-            if ($requiredRoles === null) {
-                continue;
-            }
-
-            // Se l'utente ha ALMENO UNO dei ruoli richiesti in questa rivista
-            $hasRequiredRole = !empty(array_intersect($requiredRoles, $roleIds));
-
-            if ($hasRequiredRole) {
-                return true;
-            }
-
-        }
-
-        return false;
-    }
-
-    /**
-     * Ottiene TUTTI i ruoli dell'utente organizzati per contesto (rivista)
-     *
-     * @param int $userId
-     * @return array [contextId => [roleIds]]
-     */
-    private function getAllUserRolesByContext(int $userId): array
-    {
-        $results = DB::table('user_groups as ug')
-            ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
-            ->where('uug.user_id', $userId)
-            ->whereNotNull('ug.context_id')
-            ->where('ug.context_id', '>', 0)  // Solo contesti validi (riviste)
-            ->select('ug.context_id', 'ug.role_id')
-            ->get();
-
-        $rolesByContext = [];
-        foreach ($results as $row) {
-            $contextId = (int)$row->context_id;
-            $roleId = (int)$row->role_id;
-
-            if (!isset($rolesByContext[$contextId])) {
-                $rolesByContext[$contextId] = [];
-            }
-
-            if (!in_array($roleId, $rolesByContext[$contextId])) {
-                $rolesByContext[$contextId][] = $roleId;
-            }
-        }
-
-        return $rolesByContext;
-    }
-
-    /**
-     * Salva utente pendente in sessione per il flusso OTP
-     */
-    private function storePendingUserInSession($user, $request): void
-    {
-        $session = $request->getSession();
-        $session->put('2fa_pending_user_id', $user->getId());
-        $session->put('2fa_pending_expires', time() + 600);
-        $session->put('2fa_source', 'site_login');
     }
 
     private function interceptSignIn($request): bool
