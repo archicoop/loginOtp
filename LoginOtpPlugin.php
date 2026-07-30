@@ -14,6 +14,7 @@ use PKP\plugins\Hook;
 use PKP\security\Validation;
 use PKP\security\Role;
 use Illuminate\Support\Facades\DB;
+use PKP\config\Config;
 
 class LoginOtpPlugin extends GenericPlugin
 {
@@ -42,6 +43,10 @@ class LoginOtpPlugin extends GenericPlugin
     {
         if (!parent::register($category, $path, $mainContextId)) {
             return false;
+        }
+
+        if (Config::getVar('loginOtp', 'disabled', false)) {
+            return true;
         }
 
         Hook::add('LoadHandler', $this->handleLoadHandler(...));
