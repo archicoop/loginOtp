@@ -87,7 +87,7 @@
     font-family: 'Courier New', Courier, monospace;
     letter-spacing: 0.5em;
     text-align: center;
-    width: 10rem;
+    width: 15rem;
     padding: 0.5rem 0.75rem;
     border: 2px solid #bbb;
     border-radius: 6px;
