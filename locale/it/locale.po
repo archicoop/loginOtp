@@ -97,3 +97,6 @@ msgstr "Questo messaggio è stato generato automaticamente. Non rispondere a que
 
 msgid "plugins.generic.loginOtp.settings.error.noContext"
 msgstr "Le impostazioni Login OTP possono essere configurate solo all'interno del contesto di una rivista."
+
+msgid "plugins.generic.loginOtp.error.throttled"
+msgstr "Un codice di verifica è stato inviato di recente. Controlla la tua email o riprova più tardi."

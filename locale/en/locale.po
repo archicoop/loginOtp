@@ -97,3 +97,6 @@ msgstr "This message was generated automatically. Please do not reply to this em
 
 msgid "plugins.generic.loginOtp.settings.error.noContext"
 msgstr "Login OTP settings can only be configured from within a journal context."
+
+msgid "plugins.generic.loginOtp.error.throttled"
+msgstr "A verification code was sent recently. Please check your email or try again later."

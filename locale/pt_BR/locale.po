@@ -80,3 +80,6 @@ msgstr "Esta mensagem foi gerada automaticamente. Por favor, não responda a est
 
 msgid "plugins.generic.loginOtp.settings.error.noContext"
 msgstr "As configurações do Login OTP só podem ser configuradas no contexto de uma revista."
+
+msgid "plugins.generic.loginOtp.error.throttled"
+msgstr "Um código de verificação foi enviado recentemente. Verifique seu e-mail ou tente novamente mais tarde."

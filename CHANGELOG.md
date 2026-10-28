@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   captcha, and failed attempts were not counted by login-blocking
   plugins. reCAPTCHA/ALTCHA, the logged-in check and `force_login_ssl`
   are now applied before the OTP step.
+- The 60-second OTP throttle applied only within the same session, so
+  discarding cookies allowed unlimited code emails. The throttle is now
+  per user, with an additional limit of 5 codes per hour.
 
 ### Changed
 - The OTP verification page is now served at site level, so login works on

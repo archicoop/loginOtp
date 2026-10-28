@@ -192,10 +192,20 @@ class LoginOtpPlugin extends GenericPlugin
 
         $pendingCode = $session->get('2fa_pending_code');
         $pendingExpires = (int)$session->get('2fa_pending_expires');
-        $hasValidPendingCode = $pendingCode && time() < $pendingExpires;
+        $pendingUserId = (int)$session->get('2fa_pending_user_id');
+        $hasValidPendingCode = $pendingCode && time() < $pendingExpires
+                                && time() < $pendingExpires
+                                && $pendingUserId === $user->getId();
 
-        if ($dao->isOtpThrottled($user->getId()) && $hasValidPendingCode) {
-            $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
+        if (!$dao->canSendOtp($user->getId())) {
+            if ($hasValidPendingCode) {
+                // Stessa sessione: il codice già inviato è ancora valido
+                $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
+                return Hook::ABORT;
+            }
+            $request->redirect(null, 'login', null, null, [
+                'loginMessage' => 'plugins.generic.loginOtp.error.throttled',
+            ]);
             return Hook::ABORT;
         }
 
