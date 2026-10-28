@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `login/savePassword` authenticated users directly, so anyone knowing a
     user's password could obtain a session without OTP. For users subject
     to OTP, the request is now allowed only after a verified OTP.
+- A correct password could be detected without solving the login
+  captcha, and failed attempts were not counted by login-blocking
+  plugins. reCAPTCHA/ALTCHA, the logged-in check and `force_login_ssl`
+  are now applied before the OTP step.
 
 ### Changed
 - The OTP verification page is now served at site level, so login works on

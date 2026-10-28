@@ -15,6 +15,8 @@ use PKP\security\Validation;
 use PKP\security\Role;
 use Illuminate\Support\Facades\DB;
 use PKP\config\Config;
+use PKP\form\validation\FormValidatorAltcha;
+use PKP\form\validation\FormValidatorReCaptcha;
 
 class LoginOtpPlugin extends GenericPlugin
 {
@@ -136,6 +138,13 @@ class LoginOtpPlugin extends GenericPlugin
 
     private function interceptSignIn($request): bool
     {
+        // Controlli preliminari di LoginHandler::signIn(): se si applicano, decide il core
+        if (Validation::isLoggedIn()) {
+            return Hook::CONTINUE;
+        }
+        if (Config::getVar('security', 'force_login_ssl') && $request->getProtocol() != 'https') {
+            return Hook::CONTINUE;
+        }
 
         $context = $request->getContext();
         $contextId = $context ? (int)$context->getId() : 0;
@@ -169,6 +178,10 @@ class LoginOtpPlugin extends GenericPlugin
 
         $requires = $this->userRequires2FA($user->getId(), $request);
         if (!$requires) {
+            return Hook::CONTINUE;
+        }
+
+        if (!$this->captchaPassed($request)) {
             return Hook::CONTINUE;
         }
 
@@ -310,5 +323,40 @@ class LoginOtpPlugin extends GenericPlugin
 
         $request->redirect(null, 'login');
         return Hook::ABORT;
+    }
+
+    /**
+     * Replica i controlli captcha di LoginHandler::signIn().
+     * Va chiamato solo dopo aver verificato la password: il token reCAPTCHA
+     * è monouso, e consumarlo anche per le password errate farebbe trovare
+     * al core un token già usato (errore captcha al posto dell'errore di
+     * login, che betterPassword conta).
+     */
+    private function captchaPassed($request): bool
+    {
+        if (Config::getVar('captcha', 'captcha_on_login') && Config::getVar('captcha', 'recaptcha')) {
+            try {
+                FormValidatorReCaptcha::validateResponse(
+                    $request->getUserVar('g-recaptcha-response'),
+                    $request->getRemoteAddr(),
+                    $request->getServerHost()
+                );
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        if (Config::getVar('captcha', 'altcha_on_login') && Config::getVar('captcha', 'altcha')) {
+            try {
+                FormValidatorAltcha::validateResponse(
+                    $request->getUserVar('altcha'),
+                    $request->getRemoteAddr()
+                );
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

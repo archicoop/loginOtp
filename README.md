@@ -122,6 +122,12 @@ Note that Rules 1–4 still cover the most sensitive cases regardless of the per
 
 The plugin hooks into `LoadHandler` with `Hook::SEQUENCE_LATE`. Plugins that block login on the same hook (e.g. account lockout in betterPassword) run first: if they deny the login, no OTP is sent. A plugin that authenticates users on `login/signIn` at an earlier sequence would run before the OTP step.
 
+### Login captcha
+
+When reCAPTCHA or ALTCHA is enabled for login (`captcha_on_login` / `altcha_on_login` in `config.inc.php`), the captcha is checked before any OTP is sent: without a valid captcha the login fails exactly as it would without the plugin. The captcha is checked only after the password has been verified, because reCAPTCHA tokens are single-use and failed attempts must still reach the core (and be counted by login-blocking plugins).
+
+**Known limitation (reCAPTCHA only):** a request carrying a non-empty but invalid token takes slightly longer when the password is correct, because the token is verified twice. ALTCHA is not affected.
+
 ### Email configuration
 
 Make sure OMP/OJS is configured to send emails. See the `[email]` section in `config.inc.php`. The plugin uses whatever transport is already configured (SMTP, sendmail, etc.).
@@ -322,6 +328,12 @@ Le regole 1–4 coprono comunque i casi più sensibili indipendentemente dalla l
 ### Compatibilità con altri plugin di login
 
 Il plugin si aggancia a `LoadHandler` con `Hook::SEQUENCE_LATE`. I plugin che bloccano il login sullo stesso hook (ad esempio il blocco account di betterPassword) vengono eseguiti prima: se negano il login, nessun OTP viene inviato. Un plugin che autentica gli utenti su `login/signIn` con una sequenza precedente verrebbe eseguito prima del passaggio OTP.
+
+### Captcha di login
+
+Quando reCAPTCHA o ALTCHA sono attivi sul login (`captcha_on_login` / `altcha_on_login` in `config.inc.php`), il captcha viene verificato prima dell'invio di qualsiasi OTP: senza un captcha valido il login fallisce esattamente come farebbe senza il plugin. Il captcha viene verificato solo dopo la password, perché i token reCAPTCHA sono monouso e i tentativi falliti devono comunque arrivare al core (ed essere conteggiati dai plugin che bloccano il login).
+
+**Limite noto (solo reCAPTCHA):** una richiesta con un token non vuoto ma non valido impiega un po' più tempo quando la password è corretta, perché il token viene verificato due volte. ALTCHA non è interessato.
 
 ### Configurazione email
 
