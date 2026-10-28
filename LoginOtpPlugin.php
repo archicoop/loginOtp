@@ -123,6 +123,14 @@ class LoginOtpPlugin extends GenericPlugin
             return $this->interceptSignIn($request);
         }
 
+        if ($page === 'login' && $op === 'savePassword') {
+            $request = Application::get()->getRequest();
+            if (!$request->isPost()) {
+                return Hook::CONTINUE;
+            }
+            return $this->guardSavePassword($request);
+        }
+
         return Hook::CONTINUE;
     }
 
@@ -269,5 +277,38 @@ class LoginOtpPlugin extends GenericPlugin
             ->unique()
             ->values()
             ->toArray();
+    }
+
+    /**
+     * login/savePassword autentica direttamente (Validation::login nel core).
+     * Per gli utenti soggetti a OTP è ammesso solo dopo un OTP verificato,
+     * cioè con il permesso lasciato da LoginOtpHandler::completeLogin().
+     */
+    private function guardSavePassword($request): bool
+    {
+        $username = trim((string)$request->getUserVar('username'));
+        if ($username === '') {
+            return Hook::CONTINUE;
+        }
+
+        $user = Repo::user()->getByUsername($username, true)
+            ?? Repo::user()->getByEmail($username, true);
+        if (!$user || $user->getDisabled()) {
+            return Hook::CONTINUE;
+        }
+
+        if (!$this->userRequires2FA($user->getId(), $request)) {
+            return Hook::CONTINUE;
+        }
+
+        $session = $request->getSession();
+        $allowedUserId = (int)$session->get('loginOtp_pwchange_user_id');
+        $allowedUntil = (int)$session->get('loginOtp_pwchange_expires');
+        if ($allowedUserId === $user->getId() && time() < $allowedUntil) {
+            return Hook::CONTINUE;
+        }
+
+        $request->redirect(null, 'login');
+        return Hook::ABORT;
     }
 }

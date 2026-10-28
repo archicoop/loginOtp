@@ -181,6 +181,9 @@ class LoginOtpHandler extends Handler
 
         if ($user->getMustChangePassword()) {
             Validation::logout();
+            // logout() invalida la sessione: il permesso va scritto dopo
+            $session->put('loginOtp_pwchange_user_id', $user->getId());
+            $session->put('loginOtp_pwchange_expires', time() + 30);
             $request->redirect($contextPath, 'login', 'changePassword', [$user->getUsername()]);
             return;
         }
@@ -202,6 +205,5 @@ class LoginOtpHandler extends Handler
     {
         $request->redirect($this->originContextPath($session), 'login');
     }
-
 
 }

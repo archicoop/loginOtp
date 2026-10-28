@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   after installation) skipped OTP for every user, Site Admin and Journal
   Manager included. The plugin is now declared `sitewide` and the
   per-context enabled check in `interceptSignIn()` has been removed.
+- `login/savePassword` authenticated users directly, so anyone knowing a
+    user's password could obtain a session without OTP. For users subject
+    to OTP, the request is now allowed only after a verified OTP.
 
 ### Changed
 - The OTP verification page is now served at site level, so login works on
