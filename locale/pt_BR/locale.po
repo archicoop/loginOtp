@@ -83,3 +83,9 @@ msgstr "As configurações do Login OTP só podem ser configuradas no contexto d
 
 msgid "plugins.generic.loginOtp.error.throttled"
 msgstr "Um código de verificação foi enviado recentemente. Verifique seu e-mail ou tente novamente mais tarde."
+
+msgid "plugins.generic.loginOtp.settings.role.alwaysRequired"
+msgstr "Sempre obrigatório, em todas as revistas do site."
+
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
+msgstr "Administradores do site, Gerentes e Gerentes de assinaturas sempre precisam verificar por e-mail. Selecione os demais papéis para os quais a verificação é obrigatória nesta revista. Se nenhum for selecionado, esses usuários entram sem verificação, exceto no login do site ou por uma revista em que não têm papéis."

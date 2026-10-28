@@ -14,14 +14,17 @@
 			{foreach from=$allRoles key=roleId item=roleKey}
 				<li style="margin:0.5em 0;">
 					<label style="font-weight:bold;">
-						<input type="checkbox" name="requiredRoles[]" value="{$roleId}"
-						       class=""
-						       {if in_array($roleId, $requiredRoles)}checked="checked"{/if}>
+						{if in_array($roleId, $alwaysRequiredRoles)}
+							<input type="checkbox" checked="checked" disabled="disabled">
+						{else}
+							<input type="checkbox" name="requiredRoles[]" value="{$roleId}"
+							       {if in_array($roleId, $requiredRoles)}checked="checked"{/if}>
+						{/if}
 						{translate key=$roleKey}
 					</label>
-					{if array_key_exists($roleId, $roleNotes)}
+					{if in_array($roleId, $alwaysRequiredRoles)}
 						<div style="margin-left:1.6em; margin-top:0.1em; font-size:0.85em; color:#666;">
-							{translate key=$roleNotes[$roleId]}
+							{translate key="plugins.generic.loginOtp.settings.role.alwaysRequired"}
 						</div>
 					{/if}
 				</li>

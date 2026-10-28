@@ -90,12 +90,12 @@ OTP is required on login if **any** of the following rules apply, evaluated in o
 
 1. **Site-level login** — login from the global form (no journal context) → OTP.
 2. **Site Administrator** — user holds the Site Admin role → OTP.
-3. **Journal Manager anywhere** — user holds the Journal Manager role in any journal of the site (not just the one being logged into) → OTP.
+3. **Manager or Subscription Manager anywhere** — user holds the Journal Manager permission level (Journal manager, Journal editor, Production editor) or the Subscription Manager role in any journal of the site → OTP.
 4. **No roles in the current journal** — user has no roles at all in the journal being logged into → OTP. The login is treated as "external" to that journal.
 5. **Settings unconfigured for the current journal** — the settings form has never been saved for this journal → OTP for all users.
 6. **Role match** — at least one of the user's roles in the current journal is in the journal's required-roles list → OTP. Otherwise, no OTP.
 
-Rules 2 and 3 are site-wide: once a user holds Site Admin or Journal Manager in any journal, OTP follows them everywhere for the whole site. Rules 4–6 are evaluated against the specific journal being logged into.
+Rules 2 and 3 are site-wide: once a user holds Site Admin or Journal Manager or Subscription Manager in any journal, OTP follows them everywhere for the whole site. Rules 4–6 are evaluated against the specific journal being logged into.
 
 ### Examples
 
@@ -114,7 +114,7 @@ Assume two journals, `Journal A` and `Journal B`.
 
 ### Known limitation — empty required-roles list
 
-If a Journal Manager saves an empty required-roles list on a journal, users **with roles on that journal that are not Site Admin and not Journal Manager elsewhere** will log in without OTP on that journal. This is by design — it is the mechanism for opting a journal out of OTP for ordinary roles. It is the site administrator's and Journal Manager's responsibility to configure each journal appropriately.
+If a Journal Manager saves an empty required-roles list on a journal, users **with roles on that journal that are not Site Admin and not Journal Manager or Subscription Manager elsewhere** will log in without OTP on that journal. This is by design — it is the mechanism for opting a journal out of OTP for ordinary roles. It is the site administrator's and Journal Manager's responsibility to configure each journal appropriately.
 
 Note that Rules 1–4 still cover the most sensitive cases regardless of the per-journal list: a Site Admin, a Journal Manager from any journal, an external user, and the site-level login form all keep OTP. The "opt-out" only relaxes OTP for users whose entire footprint on the site is roles in that one journal that the manager has chosen not to protect.
 
@@ -297,12 +297,12 @@ L'OTP è richiesto al login se **una qualsiasi** delle seguenti regole si applic
 
 1. **Login a livello sito** — login dal modulo globale (nessuna rivista di contesto) → OTP.
 2. **Amministratore del sito** — l'utente ha il ruolo Site Admin → OTP.
-3. **Gestore di una qualsiasi rivista** — l'utente ha il ruolo Gestore in una qualsiasi rivista del sito (non solo quella su cui sta facendo login) → OTP.
+3. **Gestore o Gestore abbonamenti in una qualsiasi rivista** — l'utente ha il livello di permesso Gestore (Journal manager, Journal editor, Production editor) o il ruolo Gestore abbonamenti in una qualsiasi rivista del sito → OTP.
 4. **Nessun ruolo nella rivista corrente** — l'utente non ha alcun ruolo nella rivista su cui sta facendo login → OTP. Il login è trattato come "esterno" a quella rivista.
 5. **Impostazioni non configurate per la rivista corrente** — il form delle impostazioni non è mai stato salvato per questa rivista → OTP per tutti gli utenti.
 6. **Match sui ruoli** — almeno uno dei ruoli dell'utente nella rivista corrente è nella lista dei ruoli richiesti per quella rivista → OTP. Altrimenti, niente OTP.
 
-Le regole 2 e 3 sono a livello di sito: una volta che un utente ha Site Admin o Gestore in una qualsiasi rivista, l'OTP lo segue ovunque per tutto il sito. Le regole 4–6 sono valutate sulla rivista specifica su cui si sta facendo login.
+Le regole 2 e 3 sono a livello di sito: una volta che un utente ha Site Admin o Gestore in una qualsiasi rivista o Gestore di sottoscrizioni, l'OTP lo segue ovunque per tutto il sito. Le regole 4–6 sono valutate sulla rivista specifica su cui si sta facendo login.
 
 ### Esempi
 
@@ -321,7 +321,7 @@ Assumi due riviste, `Rivista A` e `Rivista B`.
 
 ### Limitazione nota — lista ruoli richiesti vuota
 
-Se un Gestore della rivista salva una lista di ruoli richiesti vuota su una rivista, gli utenti **con ruoli su quella rivista che non sono né Site Admin né Gestori altrove** faranno login senza OTP su quella rivista. È intenzionale — è il meccanismo per escludere una rivista dall'OTP per i ruoli ordinari. È responsabilità dell'amministratore del sito e del Gestore della rivista configurare ogni rivista in modo appropriato.
+Se un Gestore della rivista salva una lista di ruoli richiesti vuota su una rivista, gli utenti **con ruoli su quella rivista che non sono né Site Admin né Gestori di riviste o sottoscrizioni altrove** faranno login senza OTP su quella rivista. È intenzionale — è il meccanismo per escludere una rivista dall'OTP per i ruoli ordinari. È responsabilità dell'amministratore del sito e del Gestore della rivista configurare ogni rivista in modo appropriato.
 
 Le regole 1–4 coprono comunque i casi più sensibili indipendentemente dalla lista per-rivista: Site Admin, Gestore di qualsiasi rivista, utente esterno e login dal modulo di sito mantengono sempre l'OTP. L'"opt-out" allenta l'OTP solo per gli utenti la cui presenza sul sito consiste interamente in ruoli su quella rivista che il gestore ha deciso di non proteggere.
 

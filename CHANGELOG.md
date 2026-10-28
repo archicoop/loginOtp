@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The 60-second OTP throttle applied only within the same session, so
   discarding cookies allowed unlimited code emails. The throttle is now
   per user, with an additional limit of 5 codes per hour.
+- Subscription Managers are now always required to verify by email, in every journal, like Site Administrators and Managers. The settings form
+    shows these roles as always required instead of as selectable options.
 
 ### Changed
 - The OTP verification page is now served at site level, so login works on

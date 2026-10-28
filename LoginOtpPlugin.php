@@ -21,6 +21,16 @@ use PKP\form\validation\FormValidatorReCaptcha;
 class LoginOtpPlugin extends GenericPlugin
 {
 
+    /**
+     * Ruoli per cui l'OTP è sempre richiesto, in qualunque rivista e da
+     * qualunque rivista si faccia login. Non configurabili per rivista.
+     */
+    public const ALWAYS_REQUIRED_ROLES = [
+        Role::ROLE_ID_SITE_ADMIN,
+        Role::ROLE_ID_MANAGER,
+        Role::ROLE_ID_SUBSCRIPTION_MANAGER,
+    ];
+
     public function getDisplayName(): string
     {
         return __('plugins.generic.loginOtp.displayName');
@@ -247,15 +257,11 @@ class LoginOtpPlugin extends GenericPlugin
         }
         $contextId = (int)$context->getId();
 
-        // Regola 2: Site Admin → sempre 2FA (ruolo non legato a una rivista)
-        if ($this->userHasRole($userId, Role::ROLE_ID_SITE_ADMIN)) {
-            return true;
-        }
-
-        // Regola 2-bis: Journal Manager in QUALUNQUE rivista → sempre 2FA
-        // (un JM ha privilegi che lo seguono in tutto il sito, non solo
-        // nella rivista che gestisce; coerente con la Regola 2 sul Site Admin)
-        if ($this->userHasRole($userId, Role::ROLE_ID_MANAGER)) {
+        // Regola 2: Site Admin, Manager (Journal manager, Journal editor,
+        // Production editor) o Subscription Manager in QUALUNQUE rivista
+        // → sempre 2FA. Sono privilegi che la sessione, valida su tutto il
+        // sito, porta con sé ovunque.
+        if ($this->userHasAnyRole($userId, self::ALWAYS_REQUIRED_ROLES)) {
             return true;
         }
 
@@ -279,13 +285,12 @@ class LoginOtpPlugin extends GenericPlugin
         return $hasMatch;
     }
 
-    /** True se l'utente ha il ruolo indicato in una qualsiasi rivista. */
-    private function userHasRole(int $userId, int $roleId): bool
+    private function userHasAnyRole(int $userId, array $roleIds): bool
     {
         return DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
-            ->where('ug.role_id', $roleId)
+            ->whereIn('ug.role_id', $roleIds)
             ->exists();
     }
 
