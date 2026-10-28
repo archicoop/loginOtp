@@ -49,7 +49,7 @@ class LoginOtpPlugin extends GenericPlugin
             return true;
         }
 
-        Hook::add('LoadHandler', $this->handleLoadHandler(...), Hook::SEQUENCE_CORE);
+        Hook::add('LoadHandler', $this->handleLoadHandler(...), Hook::SEQUENCE_LATE);
 
         return true;
     }
@@ -132,10 +132,6 @@ class LoginOtpPlugin extends GenericPlugin
         $context = $request->getContext();
         $contextId = $context ? (int)$context->getId() : 0;
 
-        if ($contextId > 0 && !$this->getEnabled($contextId)) {
-            return Hook::CONTINUE;
-        }
-
         if (!$request->checkCSRF()) {
             return Hook::CONTINUE;
         }
@@ -171,12 +167,14 @@ class LoginOtpPlugin extends GenericPlugin
         $dao = new LoginOtpDAO();
         $session = $request->getSession();
 
+        $session->put('2fa_context_path', $context ? $context->getPath() : Application::SITE_CONTEXT_PATH);
+
         $pendingCode = $session->get('2fa_pending_code');
         $pendingExpires = (int)$session->get('2fa_pending_expires');
         $hasValidPendingCode = $pendingCode && time() < $pendingExpires;
 
         if ($dao->isOtpThrottled($user->getId()) && $hasValidPendingCode) {
-            $request->redirect(null, 'loginOtp', 'verify');
+            $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
             return Hook::ABORT;
         }
 
@@ -192,7 +190,7 @@ class LoginOtpPlugin extends GenericPlugin
         $dao->recordOtpSent($user->getId());
         LoginOtpHandler::sendOtpEmail($user, $code, $request);
 
-        $request->redirect(null, 'loginOtp', 'verify');
+        $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
         return Hook::ABORT;
     }
 

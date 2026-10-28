@@ -3,8 +3,9 @@
 <version>
 	<application>loginOtp</application>
 	<type>plugins.generic</type>
-	<release>2.0.1.0</release>
-	<date>2026-06-30</date>
+	<release>2.0.2.0</release>
+	<date>2026-10-27</date>
 	<lazy-load>1</lazy-load>
+    <sitewide>1</sitewide>
 	<class>LoginOtpPlugin</class>
 </version>

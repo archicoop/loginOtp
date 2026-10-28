@@ -15,9 +15,10 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 - **Email OTP**: after a successful username/password login, a 6-digit one-time code is sent to the user's registered email address
 - **Per-journal configuration**: each journal independently decides which roles must complete the 2FA step on that journal
 - **Site-wide protection**: site-level login (the global login form) always requires OTP, regardless of per-journal settings
-- **Always-active design**: the plugin runs as a system component — it cannot be disabled, only configured. To opt a journal out, leave its required-roles list empty (see Configuration for the caveat)
+- **Always-active design**: the plugin is loaded on every journal of the site, including journals created later, and cannot be disabled, only configured. To opt a journal out, leave its required-roles list empty (see Configuration for the caveat)
+- **Works on unpublished journals**: the code-verification page is served at site level, so OTP login also works on journals that are not publicly enabled; users are returned to the originating journal afterwards
 - **Brute-force protection**: account locked for 15 minutes after 5 failed attempts
-- **Flood protection**: at most one OTP sent per user per 60 seconds
+- **Flood protection**: at most one OTP sent per user per 60 seconds within the same session
 - **Secure by design**: only a SHA-256 hash of the OTP is stored (in session), never the plain code; OTP generated via CSPRNG (`random_int`)
 - **No extra dependencies**: uses the existing email infrastructure and database of OMP/OJS
 
@@ -27,7 +28,7 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Plugin version | OMP   | OJS   |
 |----------------|-------|-------|
-| 2.0.1          | 3.5.x | 3.5.x |
+| 2.0.2          | 3.5.x | 3.5.x |
 
 ---
 
@@ -46,15 +47,20 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 1. Download the latest release `.tar.gz` from the [Releases](../../releases) page
 2. Extract it into `plugins/generic/loginOtp/` inside your OMP or OJS installation
 3. In OMP/OJS, go to **Settings → Website → Plugins → Generic Plugins**
-4. The plugin appears in the list as enabled (it cannot be disabled — see Configuration)
+4. Enable the plugin (see the note below)
 
 ### Manual installation via upload in plugin page
 
 1. Download the latest release `.tar.gz` from the [Releases](../../releases) page
 2. In OMP/OJS, go to **Settings → Website → Plugins → Upload a New Plugin**
 3. Browse to the plugin `.tar.gz` file and install the plugin
+4. Enable the plugin (see the note below)
 
-After installation, the plugin is active across the whole site. Configure each journal individually via its **Settings** action.
+> **Note:** enabling the plugin once — in any journal or at site level — makes it active on the whole site, including journals created later. Until then, no OTP is requested anywhere. Journals whose settings have never been saved use the fail-safe default (OTP for all users); configure each journal via its **Settings** action.
+
+### Upgrading from 2.0.1 or earlier
+
+Up to 2.0.1 the plugin was loaded only on journals where it had been explicitly enabled: logins through any other journal skipped OTP for every user. From 2.0.2 the plugin is declared site-wide. After upgrading, check that the `versions` table reports `sitewide = 1` for `loginOtp`.
 
 ---
 
@@ -62,14 +68,11 @@ After installation, the plugin is active across the whole site. Configure each j
 
 ### Where to configure
 
-The plugin exposes a **Settings** action on two panels:
+The **Settings** action is available in **Settings → Website → Plugins** of each journal. There is no site-wide configuration — every journal is configured independently.
 
-- **Site Admin → Hosted Journals → (any journal) → Plugins**: configure that journal's required roles
-- **Journal Manager → Website → Plugins**: same form, scoped to the manager's journal
-
-Both Site Admins and Journal Managers can change a journal's configuration. There is no site-wide configuration — every journal is configured independently.
-
-The enable/disable checkbox is **read-only and always on**: the plugin is an always-active system component. To opt a journal out of OTP for normal users, save the form with **no roles selected** (see the limitation below).
+- The **Settings** action is shown only in journals where the plugin is marked as enabled. In a journal where it is not, enable it first: OTP is already enforced there with the fail-safe default, enabling only exposes the configuration form.
+- Enabling and configuring context-level plugins requires the **Journal Manager** role in that journal. A Site Admin without that role receives an authorization error (OJS/OMP core restriction).
+- The enable checkbox cannot be unchecked once set. To opt a journal out of OTP for normal users, save the form with **no roles selected** (see the limitation below).
 
 ### What you configure
 
@@ -79,7 +82,7 @@ The settings form is a checklist of roles. For each journal, you select which ro
 |---------|--------------------------------|
 | One or more roles selected | A user with at least one of the selected roles in that journal must verify via OTP |
 | No roles selected | Most users skip OTP on that journal — but several site-wide rules still force OTP for elevated or external users (see Rules) |
-| Never configured | OTP required for all users (fail-safe default; in normal use this state is unreachable because the plugin always writes an initial configuration) |
+| Never configured | OTP required for all users (fail-safe default). This is the state of every journal until its settings form is saved, including newly created journals |
 
 ### Rules
 
@@ -89,7 +92,7 @@ OTP is required on login if **any** of the following rules apply, evaluated in o
 2. **Site Administrator** — user holds the Site Admin role → OTP.
 3. **Journal Manager anywhere** — user holds the Journal Manager role in any journal of the site (not just the one being logged into) → OTP.
 4. **No roles in the current journal** — user has no roles at all in the journal being logged into → OTP. The login is treated as "external" to that journal.
-5. **Settings unconfigured for the current journal** — defensive fallback, in practice unreachable.
+5. **Settings unconfigured for the current journal** — the settings form has never been saved for this journal → OTP for all users.
 6. **Role match** — at least one of the user's roles in the current journal is in the journal's required-roles list → OTP. Otherwise, no OTP.
 
 Rules 2 and 3 are site-wide: once a user holds Site Admin or Journal Manager in any journal, OTP follows them everywhere for the whole site. Rules 4–6 are evaluated against the specific journal being logged into.
@@ -114,6 +117,10 @@ Assume two journals, `Journal A` and `Journal B`.
 If a Journal Manager saves an empty required-roles list on a journal, users **with roles on that journal that are not Site Admin and not Journal Manager elsewhere** will log in without OTP on that journal. This is by design — it is the mechanism for opting a journal out of OTP for ordinary roles. It is the site administrator's and Journal Manager's responsibility to configure each journal appropriately.
 
 Note that Rules 1–4 still cover the most sensitive cases regardless of the per-journal list: a Site Admin, a Journal Manager from any journal, an external user, and the site-level login form all keep OTP. The "opt-out" only relaxes OTP for users whose entire footprint on the site is roles in that one journal that the manager has chosen not to protect.
+
+### Compatibility with other login plugins
+
+The plugin hooks into `LoadHandler` with `Hook::SEQUENCE_LATE`. Plugins that block login on the same hook (e.g. account lockout in betterPassword) run first: if they deny the login, no OTP is sent. A plugin that authenticates users on `login/signIn` at an earlier sequence would run before the OTP step.
 
 ### Email configuration
 
@@ -209,9 +216,10 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 - **OTP via email**: dopo un login con username/password corretto, un codice monouso a 6 cifre viene inviato all'indirizzo email registrato dell'utente
 - **Configurazione per rivista**: ogni rivista decide indipendentemente quali ruoli devono completare il passaggio 2FA su quella rivista
 - **Protezione lato sito**: il login dal modulo globale di sito richiede sempre OTP, indipendentemente dalle configurazioni delle singole riviste
-- **Sempre attivo**: il plugin funziona come componente di sistema — non può essere disabilitato, solo configurato. Per escludere una rivista dall'OTP, lasciare vuota la lista dei ruoli richiesti (vedi Configurazione per la nota su questo)
+- **Sempre attivo**: il plugin è caricato su tutte le riviste del sito, comprese quelle create in seguito, e non può essere disabilitato, solo configurato. Per escludere una rivista dall'OTP, lasciare vuota la lista dei ruoli richiesti (vedi Configurazione per la nota su questo)
+- **Funziona sulle riviste non pubblicate**: la pagina di verifica del codice è servita a livello di sito, quindi il login con OTP funziona anche sulle riviste non abilitate pubblicamente; al termine l'utente torna alla rivista di origine
 - **Protezione brute-force**: account bloccato per 15 minuti dopo 5 tentativi falliti
-- **Protezione flood**: al massimo un OTP inviato per utente ogni 60 secondi
+- **Protezione flood**: al massimo un OTP inviato per utente ogni 60 secondi nella stessa sessione
 - **Sicuro by design**: solo l'hash SHA-256 dell'OTP è memorizzato (in sessione), mai il codice in chiaro; OTP generato tramite CSPRNG (`random_int`)
 - **Nessuna dipendenza esterna**: usa l'infrastruttura email e il database già configurati in OMP/OJS
 
@@ -221,7 +229,7 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 
 | Versione plugin | OMP   | OJS   |
 |-----------------|-------|-------|
-| 2.0.1           | 3.5.x | 3.5.x |
+| 2.0.2           | 3.5.x | 3.5.x |
 
 ---
 
@@ -240,15 +248,20 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 1. Scarica il file `.tar.gz` dell'ultima release dalla pagina [Releases](../../releases)
 2. Estrai il contenuto in `plugins/generic/loginOtp/` nella tua installazione OMP o OJS
 3. In OMP/OJS, vai a **Impostazioni → Sito web → Plugin → Plugin generici**
-4. Il plugin appare nell'elenco come attivo (non può essere disabilitato — vedi Configurazione)
+4. Abilita il plugin (vedi la nota più sotto)
 
 ### Installazione manuale con Upload dalla pagina Plugin
 
 1. Scarica il file `.tar.gz` dell'ultima release dalla pagina [Releases](../../releases)
 2. In OMP/OJS, vai a **Impostazioni → Sito web → Plugin → Carica un nuovo plugin**
 3. Seleziona il file `.tar.gz` scaricato e procedi con l'installazione
+4. Abilita il plugin (vedi la nota più sotto)
 
-Dopo l'installazione, il plugin è attivo su tutto il sito. Configura ogni rivista individualmente tramite la sua azione **Impostazioni**.
+> **Nota:** abilitare il plugin una volta — in una rivista qualsiasi o a livello di sito — lo rende attivo su tutto il sito, comprese le riviste create in seguito. Fino ad allora l'OTP non viene richiesto da nessuna parte. Le riviste le cui impostazioni non sono mai state salvate usano il default di sicurezza (OTP per tutti gli utenti); configura ogni rivista tramite la sua azione **Impostazioni**.
+
+### Aggiornamento dalla 2.0.1 o precedenti
+
+Fino alla 2.0.1 il plugin veniva caricato solo nelle riviste in cui era stato abilitato esplicitamente: i login passando da qualsiasi altra rivista saltavano l'OTP per tutti gli utenti. Dalla 2.0.2 il plugin è dichiarato a livello di sito. Dopo l'aggiornamento, verifica che la tabella `versions` riporti `sitewide = 1` per `loginOtp`.
 
 ---
 
@@ -256,14 +269,11 @@ Dopo l'installazione, il plugin è attivo su tutto il sito. Configura ogni rivis
 
 ### Dove si configura
 
-Il plugin espone un'azione **Impostazioni** su due pannelli:
+L'azione **Impostazioni** è disponibile in **Impostazioni → Sito web → Plugin** di ogni rivista. Non esiste una configurazione a livello di sito — ogni rivista è configurata indipendentemente.
 
-- **Amministratore sito → Riviste ospitate → (una rivista) → Plugin**: configura i ruoli richiesti per quella rivista
-- **Gestore rivista → Sito web → Plugin**: stesso form, limitato alla rivista del gestore
-
-Sia gli Amministratori del sito che i Gestori delle riviste possono modificare la configurazione di una rivista. Non esiste una configurazione a livello di sito — ogni rivista è configurata indipendentemente.
-
-La checkbox di abilitazione è **in sola lettura e sempre attiva**: il plugin è un componente di sistema sempre attivo. Per escludere una rivista dall'OTP per gli utenti normali, salva il form **senza selezionare alcun ruolo** (vedi la nota sulla limitazione più sotto).
+- L'azione **Impostazioni** compare solo nelle riviste in cui il plugin risulta abilitato. In una rivista in cui non lo è, abilitalo prima: l'OTP è già applicato con il default di sicurezza, l'abilitazione serve solo a rendere disponibile il form di configurazione.
+- Abilitare e configurare i plugin di rivista richiede il ruolo di **Gestore** in quella rivista. Un Amministratore del sito senza quel ruolo riceve un errore di autorizzazione (limite del core OJS/OMP).
+- La checkbox di abilitazione, una volta attivata, non può essere tolta. Per escludere una rivista dall'OTP per gli utenti normali, salva il form **senza selezionare alcun ruolo** (vedi la nota sulla limitazione più sotto).
 
 ### Cosa si configura
 
@@ -273,7 +283,7 @@ Il form delle impostazioni è una checklist di ruoli. Per ogni rivista, selezion
 |--------------|-------------------------------------|
 | Uno o più ruoli selezionati | Un utente con almeno uno dei ruoli selezionati su quella rivista deve verificare via OTP |
 | Nessun ruolo selezionato | La maggior parte degli utenti salta l'OTP su quella rivista — ma diverse regole a livello di sito forzano comunque l'OTP per utenti privilegiati o esterni (vedi Regole) |
-| Mai configurato | OTP obbligatorio per tutti (default di sicurezza; in uso normale questo stato è irraggiungibile perché il plugin scrive sempre una configurazione iniziale) |
+| Mai configurato | OTP obbligatorio per tutti (default di sicurezza). È lo stato di ogni rivista finché il form delle impostazioni non viene salvato, comprese le riviste appena create |
 
 ### Regole
 
@@ -283,7 +293,7 @@ L'OTP è richiesto al login se **una qualsiasi** delle seguenti regole si applic
 2. **Amministratore del sito** — l'utente ha il ruolo Site Admin → OTP.
 3. **Gestore di una qualsiasi rivista** — l'utente ha il ruolo Gestore in una qualsiasi rivista del sito (non solo quella su cui sta facendo login) → OTP.
 4. **Nessun ruolo nella rivista corrente** — l'utente non ha alcun ruolo nella rivista su cui sta facendo login → OTP. Il login è trattato come "esterno" a quella rivista.
-5. **Impostazioni non configurate per la rivista corrente** — fallback difensivo, in pratica irraggiungibile.
+5. **Impostazioni non configurate per la rivista corrente** — il form delle impostazioni non è mai stato salvato per questa rivista → OTP per tutti gli utenti.
 6. **Match sui ruoli** — almeno uno dei ruoli dell'utente nella rivista corrente è nella lista dei ruoli richiesti per quella rivista → OTP. Altrimenti, niente OTP.
 
 Le regole 2 e 3 sono a livello di sito: una volta che un utente ha Site Admin o Gestore in una qualsiasi rivista, l'OTP lo segue ovunque per tutto il sito. Le regole 4–6 sono valutate sulla rivista specifica su cui si sta facendo login.
@@ -307,7 +317,11 @@ Assumi due riviste, `Rivista A` e `Rivista B`.
 
 Se un Gestore della rivista salva una lista di ruoli richiesti vuota su una rivista, gli utenti **con ruoli su quella rivista che non sono né Site Admin né Gestori altrove** faranno login senza OTP su quella rivista. È intenzionale — è il meccanismo per escludere una rivista dall'OTP per i ruoli ordinari. È responsabilità dell'amministratore del sito e del Gestore della rivista configurare ogni rivista in modo appropriato.
 
-Le regole 1–4 coprono comunque i casi più sensibili indipendentemente dalla lista per-rivista: Site Admin, Gestore di qualsiasi rivista, utente esterno e login dal modulo di sito mantengono sempre l'OTP. L'"opt-out" richiede l'OTP solo per gli utenti che hanno assegnato sulla rivista almeno uno dei ruoli che il gestore ha deciso di proteggere.
+Le regole 1–4 coprono comunque i casi più sensibili indipendentemente dalla lista per-rivista: Site Admin, Gestore di qualsiasi rivista, utente esterno e login dal modulo di sito mantengono sempre l'OTP. L'"opt-out" allenta l'OTP solo per gli utenti la cui presenza sul sito consiste interamente in ruoli su quella rivista che il gestore ha deciso di non proteggere.
+
+### Compatibilità con altri plugin di login
+
+Il plugin si aggancia a `LoadHandler` con `Hook::SEQUENCE_LATE`. I plugin che bloccano il login sullo stesso hook (ad esempio il blocco account di betterPassword) vengono eseguiti prima: se negano il login, nessun OTP viene inviato. Un plugin che autentica gli utenti su `login/signIn` con una sequenza precedente verrebbe eseguito prima del passaggio OTP.
 
 ### Configurazione email
 
