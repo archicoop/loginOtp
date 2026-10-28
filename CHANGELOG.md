@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-10-27
+
+### Fixed
+- Account lockouts enforced by other login-blocking plugins (e.g.
+  betterPassword) were bypassed when the correct password was supplied.
+  The `LoadHandler` hook now uses `Hook::SEQUENCE_LATE` instead of
+  `Hook::SEQUENCE_CORE`, so plugins that deny login run first and the OTP
+  step is reached only if none of them aborts.
+- The plugin was loaded only in contexts where it had been explicitly
+  enabled: logins through any other journal (including journals created
+  after installation) skipped OTP for every user, Site Admin and Journal
+  Manager included. The plugin is now declared `sitewide` and the
+  per-context enabled check in `interceptSignIn()` has been removed.
+- `login/savePassword` authenticated users directly, so anyone knowing a
+    user's password could obtain a session without OTP. For users subject
+    to OTP, the request is now allowed only after a verified OTP.
+- A correct password could be detected without solving the login
+  captcha, and failed attempts were not counted by login-blocking
+  plugins. reCAPTCHA/ALTCHA, the logged-in check and `force_login_ssl`
+  are now applied before the OTP step.
+- The 60-second OTP throttle applied only within the same session, so
+  discarding cookies allowed unlimited code emails. The throttle is now
+  per user, with an additional limit of 5 codes per hour.
+- Subscription Managers are now always required to verify by email, in every journal, like Site Administrators and Managers. The settings form
+    shows these roles as always required instead of as selectable options.
+- The 60-second OTP throttle applied only within the same session, so
+  discarding cookies allowed unlimited code emails. The throttle is now
+  per user, with an additional limit of 5 unused codes per hour; both
+  are reset when a code is verified.
+
+### Changed
+- The OTP verification page is now served at site level, so login works on
+  journals that are not publicly enabled. Users are returned to the
+  originating journal after verification.
+
+### Upgrade notes
+- The plugin must be enabled in at least one context (or at site level)
+  to be loaded everywhere.
+
+## [2.0.1.1] - 2026-10-26
+
+### Changed
+- Width of the OTP input field on the verification page.
+
 ## [2.0.1] - 2026-07-30
 
 ### Fixed

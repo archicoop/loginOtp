@@ -97,3 +97,12 @@ msgstr "Questo messaggio è stato generato automaticamente. Non rispondere a que
 
 msgid "plugins.generic.loginOtp.settings.error.noContext"
 msgstr "Le impostazioni Login OTP possono essere configurate solo all'interno del contesto di una rivista."
+
+msgid "plugins.generic.loginOtp.error.throttled"
+msgstr "Un codice di verifica è stato inviato di recente. Controlla la tua email o riprova più tardi."
+
+msgid "plugins.generic.loginOtp.settings.role.alwaysRequired"
+msgstr "Sempre richiesto, in tutte le riviste del sito."
+
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
+msgstr "Amministratori del sito, Gestori e Gestori abbonamenti devono sempre verificare via email. Seleziona gli altri ruoli per cui la verifica è obbligatoria in questa rivista. Se non ne selezioni nessuno, questi utenti accedono senza verifica, tranne dal login di sito o da una rivista in cui non hanno ruoli."

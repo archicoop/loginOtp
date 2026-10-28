@@ -97,3 +97,12 @@ msgstr "This message was generated automatically. Please do not reply to this em
 
 msgid "plugins.generic.loginOtp.settings.error.noContext"
 msgstr "Login OTP settings can only be configured from within a journal context."
+
+msgid "plugins.generic.loginOtp.error.throttled"
+msgstr "A verification code was sent recently. Please check your email or try again later."
+
+msgid "plugins.generic.loginOtp.settings.role.alwaysRequired"
+msgstr "Always required, in every journal of the site."
+
+msgid "plugins.generic.loginOtp.settings.requiredRoles.description"
+msgstr "Site Administrators, Managers and Subscription Managers are always required to verify by email. Select the other roles for which verification is mandatory in this journal. If none is selected, those users log in without verification, except at site level or through a journal in which they have no role."

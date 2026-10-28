@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use PKP\core\PKPRequest;
 use PKP\security\Validation;
+use APP\core\Application;
 
 class LoginOtpHandler extends Handler
 {
@@ -38,7 +39,7 @@ class LoginOtpHandler extends Handler
         $session = $request->getSession();
         [$userId] = $this->validatePendingSession($session);
         if (!$userId) {
-            $request->redirect(null, 'login');
+            $this->redirectToLogin($request, $session);
             return;
         }
 
@@ -51,7 +52,7 @@ class LoginOtpHandler extends Handler
 
         if ($request->isPost()) {
             if (!$request->checkCSRF()) {
-                $request->redirect(null, 'login');
+                $this->redirectToLogin($request, $session);
                 return;
             }
 
@@ -71,12 +72,13 @@ class LoginOtpHandler extends Handler
             // Check expiry
             if (!$storedHash || time() > $expires) {
                 $this->clearPendingSession($session);
-                $request->redirect(null, 'login');
+                $this->redirectToLogin($request, $session);
                 return;
             }
 
             if (hash_equals($storedHash, hash('sha256', $inputCode))) {
                 $dao->resetFailedAttempts($userId);
+                $dao->resetOtpSendLimits($userId);
                 $this->completeLogin($request, $session, $userId);
                 return;
             }
@@ -159,10 +161,12 @@ class LoginOtpHandler extends Handler
 
     private function completeLogin(PKPRequest $request, $session, int $userId): void
     {
+        $contextPath = $this->originContextPath($session);
+
         $user = Repo::user()->get($userId, false);
         if (!$user) {
             $this->clearPendingSession($session);
-            $request->redirect(null, 'login');
+            $this->redirectToLogin($request, $session);
             return;
         }
 
@@ -174,18 +178,33 @@ class LoginOtpHandler extends Handler
         Validation::registerUserSession($user, $reason);
 
         $this->clearPendingSession($session);
+        $session->forget('2fa_context_path');
 
         if ($user->getMustChangePassword()) {
             Validation::logout();
-            $request->redirect(null, 'login', 'changePassword', [$user->getUsername()]);
+            // logout() invalida la sessione: il permesso va scritto dopo
+            $session->put('loginOtp_pwchange_user_id', $user->getId());
+            $session->put('loginOtp_pwchange_expires', time() + 30);
+            $request->redirect($contextPath, 'login', 'changePassword', [$user->getUsername()]);
             return;
         }
 
         if (preg_match('#^/\w#', $source)) {
             $request->redirectUrl($source);
         } else {
-            $context = $request->getContext();
-            $request->redirect($context ? $context->getPath() : null, 'dashboard');
+            $request->redirect($contextPath, 'dashboard');
         }
     }
+
+    private function originContextPath($session): string
+    {
+        $path = (string) $session->get('2fa_context_path', '');
+        return $path !== '' ? $path : Application::SITE_CONTEXT_PATH;
+    }
+
+    private function redirectToLogin(PKPRequest $request, $session): void
+    {
+        $request->redirect($this->originContextPath($session), 'login');
+    }
+
 }

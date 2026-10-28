@@ -15,9 +15,22 @@ use PKP\security\Validation;
 use PKP\security\Role;
 use Illuminate\Support\Facades\DB;
 use PKP\config\Config;
+use PKP\form\validation\FormValidatorAltcha;
+use PKP\form\validation\FormValidatorReCaptcha;
+use PKP\core\Core;
 
 class LoginOtpPlugin extends GenericPlugin
 {
+
+    /**
+     * Ruoli per cui l'OTP è sempre richiesto, in qualunque rivista e da
+     * qualunque rivista si faccia login. Non configurabili per rivista.
+     */
+    public const ALWAYS_REQUIRED_ROLES = [
+        Role::ROLE_ID_SITE_ADMIN,
+        Role::ROLE_ID_MANAGER,
+        Role::ROLE_ID_SUBSCRIPTION_MANAGER,
+    ];
 
     public function getDisplayName(): string
     {
@@ -49,7 +62,7 @@ class LoginOtpPlugin extends GenericPlugin
             return true;
         }
 
-        Hook::add('LoadHandler', $this->handleLoadHandler(...), Hook::SEQUENCE_CORE);
+        Hook::add('LoadHandler', $this->handleLoadHandler(...), Hook::SEQUENCE_LATE);
 
         return true;
     }
@@ -123,18 +136,29 @@ class LoginOtpPlugin extends GenericPlugin
             return $this->interceptSignIn($request);
         }
 
+        if ($page === 'login' && $op === 'savePassword') {
+            $request = Application::get()->getRequest();
+            if (!$request->isPost()) {
+                return Hook::CONTINUE;
+            }
+            return $this->guardSavePassword($request);
+        }
+
         return Hook::CONTINUE;
     }
 
     private function interceptSignIn($request): bool
     {
+        // Controlli preliminari di LoginHandler::signIn(): se si applicano, decide il core
+        if (Validation::isLoggedIn()) {
+            return Hook::CONTINUE;
+        }
+        if (Config::getVar('security', 'force_login_ssl') && $request->getProtocol() != 'https') {
+            return Hook::CONTINUE;
+        }
 
         $context = $request->getContext();
         $contextId = $context ? (int)$context->getId() : 0;
-
-        if ($contextId > 0 && !$this->getEnabled($contextId)) {
-            return Hook::CONTINUE;
-        }
 
         if (!$request->checkCSRF()) {
             return Hook::CONTINUE;
@@ -168,15 +192,31 @@ class LoginOtpPlugin extends GenericPlugin
             return Hook::CONTINUE;
         }
 
+        if (!$this->captchaPassed($request)) {
+            return Hook::CONTINUE;
+        }
+
         $dao = new LoginOtpDAO();
         $session = $request->getSession();
 
+        $session->put('2fa_context_path', $context ? $context->getPath() : Application::SITE_CONTEXT_PATH);
+
         $pendingCode = $session->get('2fa_pending_code');
         $pendingExpires = (int)$session->get('2fa_pending_expires');
-        $hasValidPendingCode = $pendingCode && time() < $pendingExpires;
+        $pendingUserId = (int)$session->get('2fa_pending_user_id');
+        $hasValidPendingCode = $pendingCode && time() < $pendingExpires
+                                && time() < $pendingExpires
+                                && $pendingUserId === $user->getId();
 
-        if ($dao->isOtpThrottled($user->getId()) && $hasValidPendingCode) {
-            $request->redirect(null, 'loginOtp', 'verify');
+        if (!$dao->canSendOtp($user->getId())) {
+            if ($hasValidPendingCode) {
+                // Stessa sessione: il codice già inviato è ancora valido
+                $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
+                return Hook::ABORT;
+            }
+            $request->redirect(null, 'login', null, null, [
+                'loginMessage' => 'plugins.generic.loginOtp.error.throttled',
+            ]);
             return Hook::ABORT;
         }
 
@@ -192,7 +232,7 @@ class LoginOtpPlugin extends GenericPlugin
         $dao->recordOtpSent($user->getId());
         LoginOtpHandler::sendOtpEmail($user, $code, $request);
 
-        $request->redirect(null, 'loginOtp', 'verify');
+        $request->redirect(Application::SITE_CONTEXT_PATH, 'loginOtp', 'verify');
         return Hook::ABORT;
     }
 
@@ -218,15 +258,11 @@ class LoginOtpPlugin extends GenericPlugin
         }
         $contextId = (int)$context->getId();
 
-        // Regola 2: Site Admin → sempre 2FA (ruolo non legato a una rivista)
-        if ($this->userHasRole($userId, Role::ROLE_ID_SITE_ADMIN)) {
-            return true;
-        }
-
-        // Regola 2-bis: Journal Manager in QUALUNQUE rivista → sempre 2FA
-        // (un JM ha privilegi che lo seguono in tutto il sito, non solo
-        // nella rivista che gestisce; coerente con la Regola 2 sul Site Admin)
-        if ($this->userHasRole($userId, Role::ROLE_ID_MANAGER)) {
+        // Regola 2: Site Admin, Manager (Journal manager, Journal editor,
+        // Production editor) o Subscription Manager in QUALUNQUE rivista
+        // → sempre 2FA. Sono privilegi che la sessione, valida su tutto il
+        // sito, porta con sé ovunque.
+        if ($this->userHasAnyRole($userId, self::ALWAYS_REQUIRED_ROLES)) {
             return true;
         }
 
@@ -250,26 +286,108 @@ class LoginOtpPlugin extends GenericPlugin
         return $hasMatch;
     }
 
-    /** True se l'utente ha il ruolo indicato in una qualsiasi rivista. */
-    private function userHasRole(int $userId, int $roleId): bool
+    private function userHasAnyRole(int $userId, array $roleIds): bool
     {
-        return DB::table('user_groups as ug')
+        $query = DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
-            ->where('ug.role_id', $roleId)
-            ->exists();
+            ->whereIn('ug.role_id', $roleIds);
+
+        return $this->onlyActiveAssignments($query)->exists();
     }
 
     /** Ruoli dell'utente nella rivista indicata. */
     private function getUserRoleIdsInContext(int $userId, int $contextId): array
     {
-        return DB::table('user_groups as ug')
+        $query = DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
-            ->where('ug.context_id', $contextId)
+            ->where('ug.context_id', $contextId);
+
+        return $this->onlyActiveAssignments($query)
             ->pluck('ug.role_id')
             ->unique()
             ->values()
             ->toArray();
+    }
+
+    /**
+     * login/savePassword autentica direttamente (Validation::login nel core).
+     * Per gli utenti soggetti a OTP è ammesso solo dopo un OTP verificato,
+     * cioè con il permesso lasciato da LoginOtpHandler::completeLogin().
+     */
+    private function guardSavePassword($request): bool
+    {
+        $username = trim((string)$request->getUserVar('username'));
+        if ($username === '') {
+            return Hook::CONTINUE;
+        }
+
+        $user = Repo::user()->getByUsername($username, true)
+            ?? Repo::user()->getByEmail($username, true);
+        if (!$user || $user->getDisabled()) {
+            return Hook::CONTINUE;
+        }
+
+        if (!$this->userRequires2FA($user->getId(), $request)) {
+            return Hook::CONTINUE;
+        }
+
+        $session = $request->getSession();
+        $allowedUserId = (int)$session->get('loginOtp_pwchange_user_id');
+        $allowedUntil = (int)$session->get('loginOtp_pwchange_expires');
+        if ($allowedUserId === $user->getId() && time() < $allowedUntil) {
+            return Hook::CONTINUE;
+        }
+
+        $request->redirect(null, 'login');
+        return Hook::ABORT;
+    }
+
+    /**
+     * Replica i controlli captcha di LoginHandler::signIn().
+     * Va chiamato solo dopo aver verificato la password: il token reCAPTCHA
+     * è monouso, e consumarlo anche per le password errate farebbe trovare
+     * al core un token già usato (errore captcha al posto dell'errore di
+     * login, che betterPassword conta).
+     */
+    private function captchaPassed($request): bool
+    {
+        if (Config::getVar('captcha', 'captcha_on_login') && Config::getVar('captcha', 'recaptcha')) {
+            try {
+                FormValidatorReCaptcha::validateResponse(
+                    $request->getUserVar('g-recaptcha-response'),
+                    $request->getRemoteAddr(),
+                    $request->getServerHost()
+                );
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        if (Config::getVar('captcha', 'altcha_on_login') && Config::getVar('captcha', 'altcha')) {
+            try {
+                FormValidatorAltcha::validateResponse(
+                    $request->getUserVar('altcha'),
+                    $request->getRemoteAddr()
+                );
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Solo le assegnazioni di ruolo attive, come le considera il core:
+     * rimuovere un ruolo imposta date_end invece di cancellare la riga.
+     */
+    private function onlyActiveAssignments($query)
+    {
+        $now = Core::getCurrentDate();
+        return $query
+            ->where(fn($q) => $q->whereNull('uug.date_start')->orWhere('uug.date_start', '<=', $now))
+            ->where(fn($q) => $q->whereNull('uug.date_end')->orWhere('uug.date_end', '>', $now));
     }
 }

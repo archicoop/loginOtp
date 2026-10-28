@@ -49,6 +49,7 @@ class LoginOtpSettingsForm extends Form
         $this->setData('allRoles', self::ROLES);
         $this->setData('roleNotes', self::ROLE_NOTES);
         $this->setData('pluginName', $this->plugin->getName());
+        $this->setData('alwaysRequiredRoles', LoginOtpPlugin::ALWAYS_REQUIRED_ROLES);
     }
 
     public function readInputData(): void
@@ -58,7 +59,10 @@ class LoginOtpSettingsForm extends Form
 
     public function execute(...$functionArgs): void
     {
-        $roles = array_map('intval', (array)($this->getData('requiredRoles') ?? []));
+        $roles = array_values(array_diff(
+            array_map('intval', (array)($this->getData('requiredRoles') ?? [])),
+            LoginOtpPlugin::ALWAYS_REQUIRED_ROLES
+        ));
         $this->plugin->updateSetting($this->contextId, 'requiredRoles', $roles, 'object');
         parent::execute(...$functionArgs);
     }
