@@ -14,7 +14,7 @@ class LoginOtpDAO
     private const MAX_ATTEMPTS    = 5;
     private const LOCKOUT_SECONDS = 900;  // 15 minutes
     private const OTP_THROTTLE    = 60;   // seconds between OTP sends
-    private const MAX_OTP_PER_HOUR = 3;
+    private const MAX_OTP_PER_HOUR = 5;
     private const OTP_WINDOW       = 3600;
 
     public function getForUser(int $userId): array
@@ -96,4 +96,17 @@ class LoginOtpDAO
 
         return true;
     }
+
+    /**
+     * Dopo una verifica riuscita i limiti di invio non servono più: il
+     * throttle e il tetto orario devono colpire i codici inviati e non
+     * usati, non i login andati a buon fine.
+     */
+    public function resetOtpSendLimits(int $userId): void
+    {
+        $this->saveSetting($userId, 'last_otp_sent', '0');
+        $this->saveSetting($userId, 'otp_window_start', '0');
+        $this->saveSetting($userId, 'otp_window_count', '0');
+    }
+
 }

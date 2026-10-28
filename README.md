@@ -18,7 +18,7 @@ Developed by **[Archimede Informatica](https://www.archimede.net/)**.
 - **Always-active design**: the plugin is loaded on every journal of the site, including journals created later, and cannot be disabled, only configured. To opt a journal out, leave its required-roles list empty (see Configuration for the caveat)
 - **Works on unpublished journals**: the code-verification page is served at site level, so OTP login also works on journals that are not publicly enabled; users are returned to the originating journal afterwards
 - **Brute-force protection**: account locked for 15 minutes after 5 failed attempts
-- **Flood protection**: at most one OTP sent per user every 60 seconds, and at most 5 per hour
+- **Flood protection**: at most one OTP sent per user every 60 seconds, and at most 5 unused codes per hour
 - **Secure by design**: only a SHA-256 hash of the OTP is stored (in session), never the plain code; OTP generated via CSPRNG (`random_int`)
 - **No extra dependencies**: uses the existing email infrastructure and database of OMP/OJS
 
@@ -225,7 +225,7 @@ Sviluppato da **[Archimede Informatica](https://www.archimede.net/)**.
 - **Sempre attivo**: il plugin è caricato su tutte le riviste del sito, comprese quelle create in seguito, e non può essere disabilitato, solo configurato. Per escludere una rivista dall'OTP, lasciare vuota la lista dei ruoli richiesti (vedi Configurazione per la nota su questo)
 - **Funziona sulle riviste non pubblicate**: la pagina di verifica del codice è servita a livello di sito, quindi il login con OTP funziona anche sulle riviste non abilitate pubblicamente; al termine l'utente torna alla rivista di origine
 - **Protezione brute-force**: account bloccato per 15 minuti dopo 5 tentativi falliti
-- **Protezione flood**: al massimo un OTP inviato per utente ogni 60 secondi, e al massimo 5 all'ora
+- **Protezione flood**: al massimo un OTP inviato per utente ogni 60 secondi, e al massimo 5 codici non usati all'ora
 - **Sicuro by design**: solo l'hash SHA-256 dell'OTP è memorizzato (in sessione), mai il codice in chiaro; OTP generato tramite CSPRNG (`random_int`)
 - **Nessuna dipendenza esterna**: usa l'infrastruttura email e il database già configurati in OMP/OJS
 

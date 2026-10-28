@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use PKP\config\Config;
 use PKP\form\validation\FormValidatorAltcha;
 use PKP\form\validation\FormValidatorReCaptcha;
+use PKP\core\Core;
 
 class LoginOtpPlugin extends GenericPlugin
 {
@@ -287,20 +288,23 @@ class LoginOtpPlugin extends GenericPlugin
 
     private function userHasAnyRole(int $userId, array $roleIds): bool
     {
-        return DB::table('user_groups as ug')
+        $query = DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
-            ->whereIn('ug.role_id', $roleIds)
-            ->exists();
+            ->whereIn('ug.role_id', $roleIds);
+
+        return $this->onlyActiveAssignments($query)->exists();
     }
 
     /** Ruoli dell'utente nella rivista indicata. */
     private function getUserRoleIdsInContext(int $userId, int $contextId): array
     {
-        return DB::table('user_groups as ug')
+        $query = DB::table('user_groups as ug')
             ->join('user_user_groups as uug', 'ug.user_group_id', '=', 'uug.user_group_id')
             ->where('uug.user_id', $userId)
-            ->where('ug.context_id', $contextId)
+            ->where('ug.context_id', $contextId);
+
+        return $this->onlyActiveAssignments($query)
             ->pluck('ug.role_id')
             ->unique()
             ->values()
@@ -373,5 +377,17 @@ class LoginOtpPlugin extends GenericPlugin
         }
 
         return true;
+    }
+
+    /**
+     * Solo le assegnazioni di ruolo attive, come le considera il core:
+     * rimuovere un ruolo imposta date_end invece di cancellare la riga.
+     */
+    private function onlyActiveAssignments($query)
+    {
+        $now = Core::getCurrentDate();
+        return $query
+            ->where(fn($q) => $q->whereNull('uug.date_start')->orWhere('uug.date_start', '<=', $now))
+            ->where(fn($q) => $q->whereNull('uug.date_end')->orWhere('uug.date_end', '>', $now));
     }
 }

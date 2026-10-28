@@ -78,6 +78,7 @@ class LoginOtpHandler extends Handler
 
             if (hash_equals($storedHash, hash('sha256', $inputCode))) {
                 $dao->resetFailedAttempts($userId);
+                $dao->resetOtpSendLimits($userId);
                 $this->completeLogin($request, $session, $userId);
                 return;
             }
